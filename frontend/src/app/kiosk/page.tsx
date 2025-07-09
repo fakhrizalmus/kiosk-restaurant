@@ -1,4 +1,3 @@
-// app/kiosk/page.tsx
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Minus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const menu = {
   "veg pizza": [
@@ -67,31 +67,46 @@ export default function KioskPage() {
       <div className="bg-muted border-l p-4 flex flex-col justify-between">
         <div>
           <h2 className="text-xl font-semibold mb-4">Order Information</h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
+          <AnimatePresence>
+            <motion.div
+                key="tandoori" // gunakan key unik per item
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="flex items-center justify-between mb-4"
+            >
+                <div>
                 <p className="font-medium">Tandoori Paneer Pizza</p>
                 <p className="text-sm text-muted-foreground">₹ 255.00</p>
-              </div>
-              <div className="flex items-center space-x-2">
+                </div>
+                <div className="flex items-center space-x-2">
                 <Button variant="outline" size="icon"><Minus className="w-4 h-4" /></Button>
                 <span className="font-medium">2</span>
                 <Button variant="outline" size="icon"><Plus className="w-4 h-4" /></Button>
-              </div>
-            </div>
+                </div>
+            </motion.div>
 
-            <div className="flex items-center justify-between">
-              <div>
+            <motion.div
+                key="doublecheese"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="flex items-center justify-between mb-4"
+            >
+                <div>
                 <p className="font-medium">Double Cheese Pizza</p>
                 <p className="text-sm text-muted-foreground">₹ 185.00</p>
-              </div>
-              <div className="flex items-center space-x-2">
+                </div>
+                <div className="flex items-center space-x-2">
                 <Button variant="outline" size="icon"><Minus className="w-4 h-4" /></Button>
                 <span className="font-medium">1</span>
                 <Button variant="outline" size="icon"><Plus className="w-4 h-4" /></Button>
-              </div>
-            </div>
-          </div>
+                </div>
+            </motion.div>
+            </AnimatePresence>
+
         </div>
 
         <div>
