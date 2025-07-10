@@ -17,10 +17,11 @@ module.exports = (sequelize, DataTypes) => {
     cart_id: DataTypes.INTEGER,
     product_id: DataTypes.INTEGER,
     qty: DataTypes.INTEGER,
-    status: DataTypes.ENUM
+    status: DataTypes.ENUM('waiting','preparing','served')
   }, {
     sequelize,
     modelName: 'CartItem',
+    paranoid: true
   });
   return CartItem;
 };

@@ -14,10 +14,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Cart.init({
-    no_table: DataTypes.INTEGER
+    no_table: DataTypes.INTEGER,
+    status: DataTypes.ENUM('ongoing', 'end')
   }, {
     sequelize,
     modelName: 'Cart',
+    paranoid: true
   });
   return Cart;
 };
