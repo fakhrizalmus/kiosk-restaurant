@@ -15,9 +15,6 @@ module.exports = {
       total: {
         type: Sequelize.INTEGER
       },
-      status: {
-        type: Sequelize.STRING
-      },
       paid_at: {
         type: Sequelize.DATE
       },

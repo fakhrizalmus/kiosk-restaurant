@@ -12,6 +12,11 @@ module.exports = {
       no_table: {
         type: Sequelize.INTEGER
       },
+      status: {
+        type: Sequelize.ENUM('ongoing', 'end'),
+        allowNull: false,
+        defaultValue: 'ongoing'
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
