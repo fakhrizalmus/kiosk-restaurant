@@ -2,7 +2,8 @@ const {Cart} = require('../models')
 
 const getCart = async (req, res) => {
     try {
-        let {page, row, status, no_table} = req.query
+        let {no_table} = req.params
+        let {page, row, status} = req.query
         const where = {}
 
         if (status) {
