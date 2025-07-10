@@ -73,3 +73,12 @@ export async function updateCartItem(id: number, data: {
         throw error
     }
 }
+
+export async function getCategory(params: {
+    id?: number
+}) {
+    const res = await api.get("/category", {
+        params: params || {}
+    })
+    return res.data
+}
