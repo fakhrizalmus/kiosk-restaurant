@@ -44,10 +44,11 @@ const getCartItem = async (req, res) => {
 
 const addCartItem = async (req, res) => {
     try {
-        const {cart_id, product_id} = req.body
+        const {cart_id, product_id, qty} = req.body
         const CartItemData = {
             cart_id: cart_id,
-            product_id: product_id
+            product_id: product_id,
+            qty: qty
         }
 
         const addCartItem = await CartItem.create(CartItemData)

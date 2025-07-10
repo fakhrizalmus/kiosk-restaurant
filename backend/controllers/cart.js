@@ -3,7 +3,7 @@ const {Cart} = require('../models')
 const getCart = async (req, res) => {
     try {
         let {no_table} = req.params
-        let {page, row, status} = req.query
+        let {page, row, status, id} = req.query
         const where = {}
 
         if (status) {
@@ -12,6 +12,10 @@ const getCart = async (req, res) => {
 
         if (no_table) {
             where.no_table = no_table
+        }
+
+        if (id) {
+            where.id = id
         }
 
         const options = {
