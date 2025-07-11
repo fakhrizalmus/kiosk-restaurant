@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { getCategory, getProduct } from "./actions";
 
 const menu = {
   "veg pizza": [
@@ -23,6 +25,27 @@ const menu = {
 };
 
 export default function KioskPage() {
+  const [product, setProduct] = useState<any[]>([])
+  const [kategori, setKategori] = useState<any[]>([])
+  const [selectedKategoriId, setSelectedKategoriId] = useState<number | undefined>(undefined);
+  const [selectedProductId, setSelectedProductId] = useState<number | undefined>(undefined);
+
+  const fetchData = async () => {
+    const [productRes, kategoriRes] = await Promise.all([
+      getCategory({}),
+      getProduct({
+        category_id: selectedKategoriId,
+        id: selectedProductId
+      })
+    ]);
+    setProduct(productRes)
+    setKategori(kategoriRes)
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [selectedKategoriId, selectedProductId])
+
   return (
     <div className="grid grid-cols-3 h-screen">
       {/* Menu */}
