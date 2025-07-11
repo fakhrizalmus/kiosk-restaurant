@@ -46,25 +46,35 @@ export default function KioskPage() {
     fetchData()
   }, [selectedKategoriId, selectedProductId])
 
+  useEffect(() => {
+    if (kategori.length > 0 && selectedKategoriId === undefined) {
+      setSelectedKategoriId(kategori[0].id);
+    }
+  }, [kategori])
+
   return (
     <div className="grid grid-cols-3 h-screen">
       {/* Menu */}
       <div className="col-span-2 p-6 overflow-y-auto">
         <h1 className="text-2xl font-bold mb-4">Food Ordering Self Service Kiosk</h1>
 
-        <Tabs defaultValue="veg pizza" className="space-y-4">
+        <Tabs value={selectedKategoriId?.toString()}
+          onValueChange={(val) => setSelectedKategoriId(Number(val))}
+          className="space-y-4">
           <TabsList>
-            {Object.keys(menu).map((cat) => (
-              <TabsTrigger key={cat} value={cat}>
-                {cat}
+            {kategori.map((cat) => (
+              <TabsTrigger key={cat.id} value={cat.id.toString()}>
+                {cat.name}
               </TabsTrigger>
             ))}
           </TabsList>
 
-          {Object.entries(menu).map(([cat, items]) => (
-            <TabsContent key={cat} value={cat}>
+          {kategori.map((cat) => (
+            <TabsContent key={cat.id} value={cat.id.toString()}>
               <div className="grid grid-cols-3 gap-4">
-                {items.map((item, i) => (
+                {product
+                .filter((p) => p.category_id === cat.id)
+                .map((item, i) => (
                   <Card key={i}>
                     <CardHeader className="p-2">
                       <img
