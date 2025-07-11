@@ -42,11 +42,12 @@ const getProduct = async (req, res) => {
 
 const addProduct = async (req, res) => {
     try {
-        const {category_id, name, price} = req.body
+        const {category_id, name, price, image} = req.body
         const productData = {
             category_id: category_id,
             name: name,
-            price: price
+            price: price,
+            image: image
         }
         const addProduct = await Product.create(productData)
         return res.status(200).json({
@@ -61,7 +62,7 @@ const addProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     const {id} = req.params
-    const {category_id, name, price} = req.body
+    const {category_id, name, price, image} = req.body
     const cariProduct = await Product.findByPk(id)
     if (!cariProduct) {
         return res.status(400).json({
@@ -76,6 +77,9 @@ const updateProduct = async (req, res) => {
     }
     if (price != cariProduct.price) {
         cariProduct.price = price
+    }
+    if (image != cariProduct.image) {
+        cariProduct.image = image
     }
     const updateProduct = await cariProduct.save()
     if (updateProduct) {
