@@ -3,12 +3,16 @@ const model = require('../models')
 
 const getProduct = async (req, res) => {
     try {
-        let {page, row, category_id} = req.query
+        let {page, row, category_id, id} = req.query
     
         const where = {}
     
         if (category_id) {
             where.category_id = category_id
+        }
+
+        if (id) {
+            where.id = id
         }
     
         const options = {

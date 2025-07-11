@@ -2,7 +2,7 @@ const {CartItem} = require('../models')
 
 const getCartItem = async (req, res) => {
     try {
-        let {page, row, cart_id, product_id, status} = req.query
+        let {page, row, cart_id, product_id, status, id} = req.query
         const where = {}
 
         if (cart_id) {
@@ -15,6 +15,10 @@ const getCartItem = async (req, res) => {
 
         if (status) {
             where.status = status
+        }
+
+        if (id) {
+            where.id = id
         }
 
         const options = {
