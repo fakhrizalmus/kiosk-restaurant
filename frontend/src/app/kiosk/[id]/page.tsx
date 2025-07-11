@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { getCart, getCartItem, getCategory, getProduct } from "./actions";
+import { addCart, addCartItem, getCart, getCartItem, getCategory, getProduct } from "./actions";
 import { useParams } from "next/navigation";
 
 const menu = {
@@ -96,15 +96,22 @@ export default function KioskPage() {
 
   const handleAddToOrder = (product: any) => {
     setOrderItems((prev) => {
-      const index = prev.findIndex((item) => item.id === product.id);
+      const index = prev.findIndex((item) => item.product_id === product.id);
+
       if (index !== -1) {
-        // Sudah ada: tambah qty
         const updated = [...prev];
         updated[index].qty += 1;
         return updated;
       } else {
-        // Belum ada: tambahkan
-        return [...prev, { ...product, qty: 1 }];
+        return [
+          ...prev,
+          {
+            product_id: product.id,
+            qty: 1,
+            name: product.name,
+            price: product.price
+          },
+        ];
       }
     });
   };
@@ -112,7 +119,7 @@ export default function KioskPage() {
   const handleIncrementQty = (productId: number) => {
     setOrderItems((prev) =>
       prev.map((item) =>
-        item.id === productId ? { ...item, qty: item.qty + 1 } : item
+        item.product_id === productId ? { ...item, qty: item.qty + 1 } : item
       )
     );
   };
@@ -121,11 +128,35 @@ export default function KioskPage() {
     setOrderItems((prev) =>
       prev
         .map((item) =>
-          item.id === productId ? { ...item, qty: item.qty - 1 } : item
+          item.product_id === productId ? { ...item, qty: item.qty - 1 } : item
         )
         .filter((item) => item.qty > 0)
     );
   };
+
+  const checkout = async () => {
+    if (cart[0].id) {
+      const addcart = await addCart({
+        no_table: kioskId
+      });
+
+      for (let i = 0; i < orderItems.length; i++) {
+        await addCartItem({
+          cart_id: cart[0].id,
+          product_id: orderItems[i].product_id,
+          qty: orderItems[i].qty
+        })
+      };
+    } else {
+      for (let i = 0; i < orderItems.length; i++) {
+        await addCartItem({
+          cart_id: cart[0].id,
+          product_id: orderItems[i].product_id,
+          qty: orderItems[i].qty
+        })
+      }
+    }
+  }
 
   return (
     <div className="grid grid-cols-3 h-screen">
@@ -163,7 +194,7 @@ export default function KioskPage() {
                       minimumFractionDigits: 0
                     }).format(item.price)}</p>
                   {
-                    orderItems.find((order) => order.id === item.id) ? (
+                    orderItems.find((order) => order.product_id === item.id) ? (
                       <Button className="mt-2 w-full" disabled variant="outline">
                         Added
                       </Button>
@@ -186,7 +217,7 @@ export default function KioskPage() {
           <AnimatePresence>
             {orderItems.map((item, index) => (
               <motion.div
-                key={item.id}
+                key={item.product_id}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -204,11 +235,11 @@ export default function KioskPage() {
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="icon" onClick={() => handleDecrementQty(item.id)}>
+                  <Button variant="outline" size="icon" onClick={() => handleDecrementQty(item.product_id)}>
                     <Minus className="w-4 h-4" />
                   </Button>
                   <span className="font-medium">{item.qty}</span>
-                  <Button variant="outline" size="icon" onClick={() => handleIncrementQty(item.id)}>
+                  <Button variant="outline" size="icon" onClick={() => handleIncrementQty(item.product_id)}>
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
@@ -233,7 +264,7 @@ export default function KioskPage() {
           <div className="mt-4 grid grid-cols-3 gap-2">
             <Button variant="outline">New Bill</Button>
             <Button variant="destructive">Cancel</Button>
-            <Button>Payment</Button>
+            <Button onClick={() => checkout()}>Checkout</Button>
           </div>
         </div>
       </div>
