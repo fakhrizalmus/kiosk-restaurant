@@ -5,7 +5,7 @@ const cors = require('cors')
 const bp = require("body-parser");
 const PORT = process.env.PORT
 const router = require("./routes/index")
-const { Server } = require('socket.io');
+// const { Server } = require('socket.io');
 const path = require('path');
 
 app.use(cors());
