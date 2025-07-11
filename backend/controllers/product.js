@@ -42,7 +42,8 @@ const getProduct = async (req, res) => {
 
 const addProduct = async (req, res) => {
     try {
-        const {category_id, name, price, image} = req.body
+        const {category_id, name, price} = req.body
+        const image = req.file?.filename;
         const productData = {
             category_id: category_id,
             name: name,

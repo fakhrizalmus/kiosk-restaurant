@@ -32,14 +32,15 @@ export default function KioskPage() {
 
   const fetchData = async () => {
     const [productRes, kategoriRes] = await Promise.all([
-      getCategory({}),
       getProduct({
         category_id: selectedKategoriId,
         id: selectedProductId
-      })
+      }),
+      getCategory({})
     ]);
-    setProduct(productRes)
-    setKategori(kategoriRes)
+    setProduct(productRes.data)
+    setKategori(kategoriRes.data)
+    console.log(kategoriRes);
   }
 
   useEffect(() => {
@@ -58,42 +59,38 @@ export default function KioskPage() {
       <div className="col-span-2 p-6 overflow-y-auto">
         <h1 className="text-2xl font-bold mb-4">Food Ordering Self Service Kiosk</h1>
 
-        <Tabs value={selectedKategoriId?.toString()}
-          onValueChange={(val) => setSelectedKategoriId(Number(val))}
-          className="space-y-4">
-          <TabsList>
-            {kategori.map((cat) => (
-              <TabsTrigger key={cat.id} value={cat.id.toString()}>
-                {cat.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
+        <div className="flex gap-2 mb-4">
           {kategori.map((cat) => (
-            <TabsContent key={cat.id} value={cat.id.toString()}>
-              <div className="grid grid-cols-3 gap-4">
-                {product
-                .filter((p) => p.category_id === cat.id)
-                .map((item, i) => (
-                  <Card key={i}>
-                    <CardHeader className="p-2">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-32 object-cover rounded-md"
-                      />
-                    </CardHeader>
-                    <CardContent className="p-4">
-                      <CardTitle className="text-base">{item.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">₹ {item.price}</p>
-                      <Button className="mt-2 w-full">+ Add</Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
+            <Button
+              key={cat.id}
+              variant={selectedKategoriId === cat.id ? "default" : "outline"}
+              onClick={() => setSelectedKategoriId(cat.id)}
+            >
+              {cat.name}
+            </Button>
           ))}
-        </Tabs>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          {product
+            .filter((p) => p.category_id === selectedKategoriId)
+            .map((item, i) => (
+              <Card key={i}>
+                <CardHeader className="p-2">
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/images/${item.image}`}
+                    alt={item.name}
+                    className="w-full h-32 object-cover rounded-md"
+                  />
+                </CardHeader>
+                <CardContent className="p-4">
+                  <CardTitle className="text-base">{item.name}</CardTitle>
+                  <p className="text-sm text-muted-foreground">Rp {item.price}</p>
+                  <Button className="mt-2 w-full">+ Add</Button>
+                </CardContent>
+              </Card>
+            ))}
+        </div>
       </div>
 
       {/* Order Summary */}
