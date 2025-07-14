@@ -52,7 +52,7 @@ const addTransaction = async (req, res) => {
 
         const addTransaction = await Transaction.create(TransactionData)
         return res.status(200).json({
-            data: TransactionData
+            data: addTransaction
         })
     } catch (error) {
         return res.status(404).json({

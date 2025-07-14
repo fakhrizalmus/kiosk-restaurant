@@ -52,7 +52,7 @@ const addProduct = async (req, res) => {
         }
         const addProduct = await Product.create(productData)
         return res.status(200).json({
-            data: productData
+            data: addProduct
         })
     } catch (error) {
         return res.status(404).json({

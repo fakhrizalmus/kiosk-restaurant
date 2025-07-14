@@ -38,7 +38,7 @@ const addCategory = async (req, res) => {
         }
         const addCategory = await Category.create(categoryData)
         return res.status(200).json({
-            data: categoryData
+            data: addCategory
         })
     } catch (error) {
         return res.status(404).json({

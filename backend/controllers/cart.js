@@ -48,7 +48,7 @@ const addCart = async (req, res) => {
 
         const addCart = await Cart.create(cartData)
         return res.status(200).json({
-            data: cartData
+            data: addCart
         })
     } catch (error) {
         return res.status(404).json({
