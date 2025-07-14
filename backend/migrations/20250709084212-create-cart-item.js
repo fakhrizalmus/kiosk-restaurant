@@ -7,13 +7,13 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.BIGINT
       },
       cart_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.BIGINT
       },
       product_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.BIGINT
       },
       qty: {
         type: Sequelize.INTEGER

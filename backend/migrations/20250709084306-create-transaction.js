@@ -7,10 +7,10 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.BIGINT
       },
       cart_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.BIGINT
       },
       total: {
         type: Sequelize.INTEGER
