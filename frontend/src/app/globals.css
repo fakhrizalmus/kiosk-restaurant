@@ -143,3 +143,12 @@
     @apply rounded-md border border-input px-3 py-2 bg-background text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring;
   }
 }
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
