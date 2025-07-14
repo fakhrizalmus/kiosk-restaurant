@@ -29,7 +29,7 @@ const getCartItem = async (req, res) => {
             ],
             where,
             order: [
-                ['createdAt', 'DESC']
+                ['id', 'ASC']
             ]
         }
 
