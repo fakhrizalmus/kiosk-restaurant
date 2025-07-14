@@ -158,6 +158,8 @@ export default function KioskPage() {
   
       const itemRes = await getCartItem({ cart_id: cartId });
       setCartItem(itemRes.data);
+      const cartRes = await getCart({ status: 'ongoing' }, kioskId);
+      setCart(cartRes.data);
     } catch (error) {
       console.error("Checkout gagal:", error);
     }
