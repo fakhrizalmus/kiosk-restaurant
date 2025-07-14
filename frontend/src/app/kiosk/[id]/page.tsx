@@ -75,6 +75,7 @@ export default function KioskPage() {
         const cartRes = await getCart({ status: 'ongoing' }, kioskId);
         const cartData = cartRes.data;
         setCart(cartData);
+        console.log(cartData);
 
         if (cartData.length > 0) {
           const itemRes = await getCartItem({ cart_id: cartData[0].id });
@@ -135,27 +136,35 @@ export default function KioskPage() {
   };
 
   const checkout = async () => {
-    if (cart[0].id) {
-      const addcart = await addCart({
-        no_table: kioskId
-      });
-
+    try {
+      let cartId: number;
+      if (cart.length === 0) {
+        // Buat cart baru jika belum ada
+        const addcart = await addCart({ no_table: kioskId });
+        cartId = addcart.data.id;
+      } else {
+        cartId = cart[0].id;
+      }
+  
       for (let i = 0; i < orderItems.length; i++) {
         await addCartItem({
-          cart_id: cart[0].id,
+          cart_id: cartId,
           product_id: orderItems[i].product_id,
           qty: orderItems[i].qty
         })
       };
-    } else {
-      for (let i = 0; i < orderItems.length; i++) {
-        await addCartItem({
-          cart_id: cart[0].id,
-          product_id: orderItems[i].product_id,
-          qty: orderItems[i].qty
-        })
-      }
+  
+      setOrderItems([]);
+  
+      const itemRes = await getCartItem({ cart_id: cartId });
+      setCartItem(itemRes.data);
+    } catch (error) {
+      console.error("Checkout gagal:", error);
     }
+  }
+
+  const cancel = async () => {
+    setOrderItems([]);
   }
 
   return (
@@ -211,47 +220,96 @@ export default function KioskPage() {
       </div>
 
       {/* Order Summary */}
-      <div className="bg-muted border-l p-4 flex flex-col justify-between">
+      <div className="bg-muted border-l p-6 flex flex-col justify-between min-h-screen w-full">
         <div>
-          <h2 className="text-xl font-semibold mb-4">Order Information</h2>
-          <AnimatePresence>
-            {orderItems.map((item, index) => (
-              <motion.div
-                key={item.product_id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="flex items-center justify-between mb-4"
-              >
-                <div>
-                  <p className="font-medium">{item.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                    }).format(item.price)}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="icon" onClick={() => handleDecrementQty(item.product_id)}>
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <span className="font-medium">{item.qty}</span>
-                  <Button variant="outline" size="icon" onClick={() => handleIncrementQty(item.product_id)}>
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
 
+          {/* History (Cart Items) */}
+          {cartItem.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-2">History</h3>
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                {cartItem.map((item) => {
+                  const statusColor =
+                    item.status === "waiting"
+                      ? "bg-yellow-500 border-yellow-600"
+                      : item.status === "preparing"
+                      ? "bg-blue-500 border-blue-600"
+                      : "bg-green-600 border-green-700";
+
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-center p-2 rounded"
+                    >
+                      <div>
+                        <p className="font-medium">{item.Product?.name || '-'}</p>
+                        <p className="text-sm text-muted-foreground">Qty: {item.qty}</p>
+                      </div>
+                      <span
+                        className={`text-xs text-white font-semibold px-3 py-1 rounded-full border ${statusColor}`}
+                      >
+                        {item.status}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Current Order (New Items) */}
+          {orderItems.length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Current Order</h3>
+              <AnimatePresence>
+                {orderItems.map((item) => (
+                  <motion.div
+                    key={item.product_id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex justify-between items-center p-2 mb-2 rounded"
+                  >
+                    <div>
+                      <p className="font-medium">{item.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Intl.NumberFormat("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                          minimumFractionDigits: 0,
+                        }).format(item.price)}
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDecrementQty(item.product_id)}
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                      <span className="font-medium">{item.qty}</span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleIncrementQty(item.product_id)}
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
 
+        {/* Total & Checkout */}
         <div>
           <Separator className="my-4" />
-          <div className="flex justify-between text-lg font-semibold">
+          <div className="flex justify-between text-xl font-semibold mb-4">
             <span>Total</span>
             <span>
               {new Intl.NumberFormat("id-ID", {
@@ -261,10 +319,9 @@ export default function KioskPage() {
               }).format(orderItems.reduce((total, item) => total + item.price * item.qty, 0))}
             </span>
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            <Button variant="outline">New Bill</Button>
-            <Button variant="destructive">Cancel</Button>
-            <Button onClick={() => checkout()}>Checkout</Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="destructive" onClick={cancel}>Cancel</Button>
+            <Button onClick={checkout}>Checkout</Button>
           </div>
         </div>
       </div>
