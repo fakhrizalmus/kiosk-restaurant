@@ -14,17 +14,17 @@ import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
 
 const items = [
   {
-    title: "Home",
-    url: "#",
+    title: "Transaction",
+    url: "/dashboard",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
+    title: "Product",
+    url: "/product",
     icon: Inbox,
   },
   {
-    title: "Calendar",
+    title: "Category",
     url: "#",
     icon: Calendar,
   },
