@@ -34,7 +34,7 @@ const getTransaction = async (req, res) => {
         if (page) options.offset = parseInt(page);
         if (row) options.limit = parseInt(row) || 10;
 
-        const getTransaction = await Transaction.findAll(options)
+        const getTransaction = await Transaction.findAndCountAll(options)
         return res.status(200).json({
             data: getTransaction
         })

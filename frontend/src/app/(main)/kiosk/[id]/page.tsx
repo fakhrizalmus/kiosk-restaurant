@@ -41,7 +41,7 @@ export default function KioskPage() {
     const fetchKategori = async () => {
       try {
         const res = await getCategory({});
-        const kategoriData = res.data;
+        const kategoriData = res.data.rows;
         setKategori(kategoriData);
         if (kategoriData.length > 0) {
           setSelectedKategoriId(kategoriData[0].id);
@@ -60,7 +60,7 @@ export default function KioskPage() {
 
       try {
         const res = await getProduct({ category_id: selectedKategoriId });
-        setProduct(res.data);
+        setProduct(res.data.rows);
       } catch (error) {
         console.error("Gagal mengambil produk:", error);
       }
@@ -73,13 +73,13 @@ export default function KioskPage() {
     const fetchCartAndItems = async () => {
       try {
         const cartRes = await getCart({ status: 'ongoing' }, kioskId);
-        const cartData = cartRes.data;
+        const cartData = cartRes.data.rows;
         setCart(cartData);
         console.log(cartData);
 
         if (cartData.length > 0) {
           const itemRes = await getCartItem({ cart_id: cartData[0].id });
-          setCartItem(itemRes.data);
+          setCartItem(itemRes.data.rows);
         }
       } catch (error) {
         console.log("Gagal fetch cart atau item:", error);
@@ -157,9 +157,9 @@ export default function KioskPage() {
       setOrderItems([]);
   
       const itemRes = await getCartItem({ cart_id: cartId });
-      setCartItem(itemRes.data);
+      setCartItem(itemRes.data.rows);
       const cartRes = await getCart({ status: 'ongoing' }, kioskId);
-      setCart(cartRes.data);
+      setCart(cartRes.data.rows);
     } catch (error) {
       console.error("Checkout gagal:", error);
     }

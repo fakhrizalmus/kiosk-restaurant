@@ -19,7 +19,7 @@ const getCategory = async (req, res) => {
         if (page) options.offset = parseInt(page);
         if (row) options.limit = parseInt(row) || 10;
     
-        const getCategory = await Category.findAll(options)
+        const getCategory = await Category.findAndCountAll(options)
         return res.status(200).json({
             data: getCategory
         })

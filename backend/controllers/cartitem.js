@@ -36,7 +36,7 @@ const getCartItem = async (req, res) => {
         if (page) options.offset = parseInt(page);
         if (row) options.limit = parseInt(row) || 10;
 
-        const getCartItem = await CartItem.findAll(options)
+        const getCartItem = await CartItem.findAndCountAll(options)
         return res.status(200).json({
             data: getCartItem
         })

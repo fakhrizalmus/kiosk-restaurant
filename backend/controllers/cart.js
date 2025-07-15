@@ -32,7 +32,7 @@ const getCart = async (req, res) => {
         if (page) options.offset = parseInt(page);
         if (row) options.limit = parseInt(row) || 10;
 
-        const getCart = await Cart.findAll(options)
+        const getCart = await Cart.findAndCountAll(options)
         return res.status(200).json({
             data: getCart
         })
