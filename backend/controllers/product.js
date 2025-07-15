@@ -29,7 +29,7 @@ const getProduct = async (req, res) => {
         if (page) options.offset = parseInt(page);
         if (row) options.limit = parseInt(row) || 10;
     
-        const getProduct = await Product.findAll(options)
+        const getProduct = await Product.findAndCountAll(options)
         return res.status(200).json({
             data: getProduct
         })

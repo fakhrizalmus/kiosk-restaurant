@@ -17,9 +17,13 @@ import { ColumnDef } from "@tanstack/react-table"
 
 export type Payment = {
   id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
+  price: number
+  name: string
+  image: string
+  Category: {
+    id: number
+    name: number
+  }
 }
 
 export const columns: ColumnDef<Payment>[] = [
@@ -46,34 +50,41 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Email
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "image",
+    header: "Image",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
-      const formatted = new Intl.NumberFormat("en-US", {
+      const imageName = row.getValue("image") as string
+      const imageUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/images/${imageName}`
+      return (
+        <img
+          src={imageUrl}
+          alt="product image"
+          className="w-16 h-16 object-cover rounded-md border"
+        />
+      )
+    }
+  },
+  {
+    accessorKey: "name",
+    header: "Name",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("name")}</div>
+    ),
+  },
+  {
+    accessorKey: "kategori_name",
+    header: "Kategori Name",
+    cell: ({ row }) => <div>{row.original.Category?.name}</div>,
+  },
+  {
+    accessorKey: "price",
+    header: "Harga",
+    cell: ({ row }) => {
+      const price = parseFloat(row.getValue("price"))
+      const formatted = new Intl.NumberFormat("id-ID", {
         style: "currency",
-        currency: "USD",
-      }).format(amount)
+        currency: "IDR",
+      }).format(price)
 
       return <div className="text-right font-medium">{formatted}</div>
     },

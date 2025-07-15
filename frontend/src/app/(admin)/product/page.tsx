@@ -1,47 +1,45 @@
 // page.tsx
 "use client"
 
-import { columns, Payment } from "./columns"
+import { useEffect, useState } from "react"
 import { DataTable } from "./data-table"
-
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-]
+import { getProduct } from "../actions"
+import { CardTitle } from "@/components/ui/card"
+import { columns } from "./columns"
 
 export default function Page() {
+  const [product, setProduct] = useState<any[]>([]);
+  const [countProduct, setCountProduct] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(10)
+  const [pageIndex, setPageIndex] = useState<number>(0)
+
+  useEffect(() => {
+    const fetchProduk = async () => {
+      const res = await getProduct({
+        row: pageSize,
+        page: pageIndex
+      })
+      setProduct(res.data.rows);
+      setCountProduct(res.data.count);
+    }
+
+    fetchProduk();
+  }, [pageIndex, pageSize])
   return (
-    <div className="p-10">
-      <h1 className="text-2xl font-bold mb-4">Payments</h1>
-      <DataTable columns={columns} data={data} />
+    <div className="flex flex-1 flex-col px-6">
+      <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            Data Pengeluaran
+        </CardTitle>
+        <DataTable
+            columns={columns}
+            data={product}
+            count={countProduct}
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+            setPageIndex={setPageIndex}
+            setPageSize={setPageSize} />
+      </div>
     </div>
   )
 }
