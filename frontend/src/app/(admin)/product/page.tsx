@@ -27,32 +27,32 @@ export default function Page() {
 
   const handleDelete = async (id: number) => {
     try {
-        await deleteProduct(id)
-        const res = await getProduct({
-            row: pageSize,
-            page: pageIndex * pageSize
-        })
-        setProduct(res.data.rows);
-        setCountProduct(res.data.count)
+      await deleteProduct(id)
+      const res = await getProduct({
+        row: pageSize,
+        page: pageIndex * pageSize
+      })
+      setProduct(res.data.rows);
+      setCountProduct(res.data.count)
     } catch (error) {
-        console.error("Gagal menghapus data:", error)
+      console.error("Gagal menghapus data:", error)
     }
   }
   return (
-    <div className="flex flex-1 flex-col px-6">
+    <div className="flex flex-1 flex-col w-full px-6">
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
         <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            List Produk
+          List Produk
         </CardTitle>
         <AddModal onSuccess={fetchProduk} />
         <DataTable
-            data={product}
-            count={countProduct}
-            pageIndex={pageIndex}
-            pageSize={pageSize}
-            setPageIndex={setPageIndex}
-            setPageSize={setPageSize}
-            onDelete={handleDelete} />
+          data={product}
+          count={countProduct}
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          setPageIndex={setPageIndex}
+          setPageSize={setPageSize}
+          onDelete={handleDelete} />
       </div>
     </div>
   )

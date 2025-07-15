@@ -62,7 +62,7 @@ export function AppSidebar() {
                       asChild
                       className={clsx(
                         "rounded-md",
-                        isActive && "bg-[oklch(0.7_0.18_35)] text-white"
+                        isActive && "bg-[var(--primary)] text-white"
                       )}
                     >
                       <a href={item.url} className="flex items-center gap-2">

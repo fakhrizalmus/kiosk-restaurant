@@ -41,6 +41,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/toastr": "^2.1.43",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "tailwindcss": "^4.1.11",

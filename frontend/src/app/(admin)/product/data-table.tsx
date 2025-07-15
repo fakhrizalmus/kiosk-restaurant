@@ -134,14 +134,14 @@ export function DataTable({
           </AlertDialogContent>
         </AlertDialog>
       )}
-      <div className="flex items-center py-4">
+      <div className="-mx-4 rounded-xl bg-orange-500 px-4 py-4 flex items-center">
         <Input
           placeholder="Cari nama..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-sm bg-white text-black placeholder:text-black"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -297,6 +297,6 @@ export function DataTable({
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
