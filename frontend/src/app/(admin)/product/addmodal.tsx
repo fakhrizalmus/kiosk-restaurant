@@ -18,6 +18,7 @@ interface AddModalProps {
 
 export default function AddModal({ onSuccess }: AddModalProps) {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [harga, setHarga] = useState("");
     const [open, setOpen] = useState(false);
     const [id, setValue] = useState<number | null>(null);
@@ -26,20 +27,36 @@ export default function AddModal({ onSuccess }: AddModalProps) {
     const [formData, setFormData] = useState({
         category_id: 0,
         name: "",
-        price: 0,
-        image: ""
+        price: 0
     })
 
     async function handleSubmit (e: React.FormEvent) {
-        e.preventDefault()
-        const newFormData = {
-            ...formData,
-            category_id: id ?? 0
-        };
-        const addProduk = await addProduct(newFormData);
-        console.log("Data:", newFormData)
-        setDialogOpen(false);
-        onSuccess();
+        e.preventDefault();
+        if (!selectedFile) {
+            alert("Mohon pilih file gambar.");
+            return;
+        }
+        try {
+            const newFormData = {
+                ...formData,
+                category_id: id ?? 0,
+                image: selectedFile
+            };
+            const addProduk = await addProduct(newFormData);
+            console.log("Data:", newFormData)
+            setDialogOpen(false);
+            setFormData({
+                category_id: 0,
+                name: "",
+                price: 0
+            })
+            setSelectedFile(null);
+            setHarga("");
+            onSuccess();
+            setValue(null);
+        } catch (error) {
+            console.log("Gagal menyimpan ", error);
+        }
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +148,13 @@ export default function AddModal({ onSuccess }: AddModalProps) {
                             {/* Gambar */}
                             <div className="grid gap-3">
                                 <Label htmlFor="image">Gambar</Label>
-                                <Input id="image" name="name" type="file" onChange={e => setFormData({ ...formData, image: e.target.value })} />
+                                <Input id="image" name="name" type="file" 
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0]
+                                    if (file) {
+                                    setSelectedFile(file)
+                                    }
+                                }} />
                             </div>
                             {/* Harga */}
                             <div className="flex gap-4">

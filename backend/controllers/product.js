@@ -23,7 +23,7 @@ const getProduct = async (req, res) => {
             ],
             where,
             order: [
-                ['name', 'DESC']
+                ['id', 'DESC']
             ]
         }
         if (page) options.offset = parseInt(page);

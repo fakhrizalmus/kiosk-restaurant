@@ -70,10 +70,14 @@ export async function addProduct(data: {
     category_id: number
     name: string
     price: number
-    image: string
+    image: File
 }) {
     try {
-        const res = await api.post("/product", data)
+        const res = await api.post("/product", data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
         return res.data
     } catch (error) {
         console.error("Gagal menyimpan product", error)
