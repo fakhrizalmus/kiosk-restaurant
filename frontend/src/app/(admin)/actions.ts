@@ -6,6 +6,7 @@ type GetCartParams = {
     row?: number
     id?: number
     status?: string
+    table_id?: number
 }
 
 export async function getCart(params: GetCartParams, no_table: number) {

@@ -2,6 +2,7 @@ const {Transaction} = require('../models')
 
 const getTransaction = async (req, res) => {
     try {
+        let user_id = req.user.id
         let {page, row, cart_id, total, paid_at} = req.query
         const where = {}
 
@@ -17,9 +18,12 @@ const getTransaction = async (req, res) => {
             where.paid_at = paid_at
         }
 
+        // where.user_id = user_id
+
         const options = {
             include: [
-                {model: model.Cart}
+                {model: model.Cart},
+                {model: model.User}
             ],
             where,
             order: [
