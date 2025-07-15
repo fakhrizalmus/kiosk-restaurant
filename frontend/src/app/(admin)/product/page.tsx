@@ -42,7 +42,7 @@ export default function Page() {
     <div className="flex flex-1 flex-col px-6">
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
         <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            Data Pengeluaran
+            List Produk
         </CardTitle>
         <AddModal onSuccess={fetchProduk} />
         <DataTable

@@ -98,13 +98,13 @@ export default function AddModal({ onSuccess }: AddModalProps) {
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
                     <Button className="mt-3 bg-green-400 w-fit" onClick={() => setDialogOpen(true)}>
-                        <IconPlus />Add Pengeluaran
+                        <IconPlus />Tambah Produk
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[825px]">
                     <form onSubmit={handleSubmit}>
                         <DialogHeader>
-                            <DialogTitle>Add Pengeluaran</DialogTitle>
+                            <DialogTitle>Tambah Produk</DialogTitle>
                             <DialogDescription>
                                 Click save when you&apos;re
                                 done.
@@ -113,7 +113,7 @@ export default function AddModal({ onSuccess }: AddModalProps) {
                         <div className="grid gap-4">
                             {/* Nama */}
                             <div className="grid gap-3">
-                                <Label htmlFor="name">Name <span className="text-red-500">*</span></Label>
+                                <Label htmlFor="name">Nama <span className="text-red-500">*</span></Label>
                                 <Input id="name" name="name" onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Nama" />
                             </div>
                             {/* Kategori */}

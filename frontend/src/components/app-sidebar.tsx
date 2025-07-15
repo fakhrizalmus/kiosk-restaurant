@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Sidebar,
   SidebarContent,
@@ -10,7 +12,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import clsx from "clsx"
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 const items = [
   {
@@ -41,6 +45,7 @@ const items = [
 ]
 
 export function AppSidebar() {
+  const pathname = usePathname()
   return (
     <Sidebar>
       <SidebarContent>
@@ -48,16 +53,26 @@ export function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map((item) => {
+                const isActive = pathname === item.url
+
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      className={clsx(
+                        "rounded-md",
+                        isActive && "bg-[oklch(0.7_0.18_35)] text-white"
+                      )}
+                    >
+                      <a href={item.url} className="flex items-center gap-2">
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
