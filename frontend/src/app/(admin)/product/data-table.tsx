@@ -1,4 +1,3 @@
-// data-table.tsx
 "use client"
 
 import * as React from "react"
@@ -35,30 +34,49 @@ import {
 import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { getColumns, Product } from "./columns"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { getProduct } from "../actions"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+type Props = {
+  data: Product[]
   count: number
   pageSize: number | 10
   pageIndex: number | 0
   setPageSize: React.Dispatch<React.SetStateAction<number>>
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
+  onDelete: (id: number) => Promise<void>
 }
 
-export function DataTable<TData, TValue>({
-  columns,
+export function DataTable({
   data,
   count,
   pageIndex,
   pageSize,
   setPageIndex,
-  setPageSize
-}: DataTableProps<TData, TValue>) {
+  setPageSize,
+  onDelete
+}: Props) {
+  const [selectedIdToDelete, setSelectedIdToDelete] = React.useState<number | null>(null)
+  const [selectedIdToEdit, setSelectedIdToEdit] = React.useState<number | null>(null)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const columns = React.useMemo(() => getColumns(setSelectedIdToDelete, setSelectedIdToEdit), [])
+  const [selectedData, setSelectedData] = React.useState<Product>();
+
+  React.useEffect(() => {
+    const fetchProduk = async () => {
+      const res = await getProduct({
+        id: selectedIdToDelete ?? undefined
+      })
+
+      setSelectedData(res.data.rows[0])
+    }
+
+    fetchProduk();
+  }, [selectedIdToDelete]);
 
   const table = useReactTable({
     data,
@@ -92,6 +110,30 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full">
+      {selectedIdToDelete !== null && (
+        <AlertDialog open={true} onOpenChange={() => setSelectedIdToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Apakah kamu yakin menghapus {selectedData?.name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tindakan ini akan menghapus data pengeluaran secara permanen.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Batal</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-600 text-white"
+                onClick={() => {
+                  onDelete(selectedIdToDelete)
+                  setSelectedIdToDelete(null)
+                }}
+              >
+                Hapus
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
       <div className="flex items-center py-4">
         <Input
           placeholder="Cari nama..."

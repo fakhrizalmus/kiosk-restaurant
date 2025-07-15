@@ -1,11 +1,9 @@
-// page.tsx
 "use client"
 
 import { useEffect, useState } from "react"
 import { DataTable } from "./data-table"
-import { getProduct } from "../actions"
+import { deleteProduct, getProduct } from "../actions"
 import { CardTitle } from "@/components/ui/card"
-import { columns } from "./columns"
 
 export default function Page() {
   const [product, setProduct] = useState<any[]>([]);
@@ -17,14 +15,28 @@ export default function Page() {
     const fetchProduk = async () => {
       const res = await getProduct({
         row: pageSize,
-        page: pageIndex
+        page: pageIndex * pageSize
       })
       setProduct(res.data.rows);
       setCountProduct(res.data.count);
     }
 
     fetchProduk();
-  }, [pageIndex, pageSize])
+  }, [pageIndex, pageSize]);
+
+  const handleDelete = async (id: number) => {
+    try {
+        await deleteProduct(id)
+        const res = await getProduct({
+            row: pageSize,
+            page: pageIndex * pageSize
+        })
+        setProduct(res.data.rows);
+        setCountProduct(res.data.count)
+    } catch (error) {
+        console.error("Gagal menghapus data:", error)
+    }
+  }
   return (
     <div className="flex flex-1 flex-col px-6">
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
@@ -32,13 +44,13 @@ export default function Page() {
             Data Pengeluaran
         </CardTitle>
         <DataTable
-            columns={columns}
             data={product}
             count={countProduct}
             pageIndex={pageIndex}
             pageSize={pageSize}
             setPageIndex={setPageIndex}
-            setPageSize={setPageSize} />
+            setPageSize={setPageSize}
+            onDelete={handleDelete} />
       </div>
     </div>
   )
