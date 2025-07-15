@@ -11,6 +11,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 
 interface AddModalProps {
   onSuccess: () => void
@@ -25,15 +27,23 @@ export default function AddModal({ onSuccess }: AddModalProps) {
     const [kategoriList, setKategoriList] = useState<any[]>([]);
 
     const [formData, setFormData] = useState({
-        category_id: 0,
         name: "",
         price: 0
     })
 
     async function handleSubmit (e: React.FormEvent) {
         e.preventDefault();
+        
+        if (Object.keys(formData).length < 2) {
+            toastr.error("Form wajib diisi semua");
+            return;
+        }
         if (!selectedFile) {
-            alert("Mohon pilih file gambar.");
+            toastr.error("Mohon pilih file gambar.");
+            return;
+        }
+        if (id == 0) {
+            toastr.error("Form wajib diisi semua");
             return;
         }
         try {
@@ -43,10 +53,8 @@ export default function AddModal({ onSuccess }: AddModalProps) {
                 image: selectedFile
             };
             const addProduk = await addProduct(newFormData);
-            console.log("Data:", newFormData)
             setDialogOpen(false);
             setFormData({
-                category_id: 0,
                 name: "",
                 price: 0
             })
@@ -54,6 +62,7 @@ export default function AddModal({ onSuccess }: AddModalProps) {
             setHarga("");
             onSuccess();
             setValue(null);
+            toastr.success("Berhasil simpan produk");
         } catch (error) {
             console.log("Gagal menyimpan ", error);
         }
@@ -74,6 +83,16 @@ export default function AddModal({ onSuccess }: AddModalProps) {
 
         fetchKategori();
     }, []);
+
+    const cancel = async () => {
+        setFormData({
+            name: "",
+            price: 0
+        })
+        setSelectedFile(null);
+        setHarga("");
+        setValue(null);
+    }
     return (
         <div>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -171,7 +190,7 @@ export default function AddModal({ onSuccess }: AddModalProps) {
                         <div className="mt-4">
                             <DialogFooter>
                                 <DialogClose asChild>
-                                    <Button className="bg-red-500 text-white">Batal</Button>
+                                    <Button className="bg-red-500 text-white" onClick={cancel}>Batal</Button>
                                 </DialogClose>
                                 <Button type="submit" className="bg-green-400 text-white">Simpan</Button>
                             </DialogFooter>
