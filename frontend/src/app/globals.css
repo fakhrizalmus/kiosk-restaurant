@@ -37,6 +37,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --bg-table: var(--bg-table);
 
   /* Border Radius */
   --radius-sm: calc(var(--radius) - 4px);
@@ -50,14 +51,18 @@
   --radius: 0.75rem;
 
   /* Light Theme: warm orange-based */
-  --background: oklch(0.99 0.02 75);            /* soft warm white */
-  --foreground: oklch(0.2 0.04 30);             /* near brown-black */
+  --background: #f0f4f8;
+  /* soft warm white */
+  --foreground: oklch(0.2 0.04 30);
+  /* near brown-black */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.2 0.04 30);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0.04 30);
-  --primary: oklch(0.75 0.2 45);                /* vibrant orange */
-  --primary-foreground: oklch(0.99 0.02 75);    /* white-orange */
+  --primary: oklch(0.75 0.2 45);
+  /* vibrant orange */
+  --primary-foreground: oklch(0.99 0.02 75);
+  /* white-orange */
   --secondary: oklch(0.92 0.02 45);
   --secondary-foreground: oklch(0.3 0.04 30);
   --muted: oklch(0.93 0.01 60);
@@ -68,6 +73,7 @@
   --border: oklch(0.91 0.01 75);
   --input: oklch(0.95 0.01 75);
   --ring: oklch(0.8 0.05 40);
+  --bg-table: #fffaf3;
 
   /* Charts & Sidebar */
   --chart-1: oklch(0.74 0.22 40);
@@ -127,6 +133,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

@@ -109,7 +109,7 @@ export function DataTable({
   })
 
   return (
-    <div className="w-full bg-white px-4 rounded-md shadow">
+    <div className="w-full bg-white px-4 rounded-xl shadow-md border">
       {selectedIdToDelete !== null && (
         <AlertDialog open={true} onOpenChange={() => setSelectedIdToDelete(null)}>
           <AlertDialogContent>
@@ -178,9 +178,9 @@ export function DataTable({
                         ? null
                         : header.column.columnDef.header
                           ? flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )
                           : null}
                     </TableHead>
                   ))}
@@ -198,9 +198,9 @@ export function DataTable({
                       <TableCell key={cell.id}>
                         {cell.column.columnDef.cell
                           ? flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )
                           : null}
                       </TableCell>
                     ))}
