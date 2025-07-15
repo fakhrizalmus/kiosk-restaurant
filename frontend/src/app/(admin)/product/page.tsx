@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { DataTable } from "./data-table"
 import { deleteProduct, getProduct } from "../actions"
 import { CardTitle } from "@/components/ui/card"
+import AddModal from "./addmodal"
 
 export default function Page() {
   const [product, setProduct] = useState<any[]>([]);
@@ -11,16 +12,16 @@ export default function Page() {
   const [pageSize, setPageSize] = useState<number>(10)
   const [pageIndex, setPageIndex] = useState<number>(0)
 
-  useEffect(() => {
-    const fetchProduk = async () => {
-      const res = await getProduct({
-        row: pageSize,
-        page: pageIndex * pageSize
-      })
-      setProduct(res.data.rows);
-      setCountProduct(res.data.count);
-    }
+  const fetchProduk = async () => {
+    const res = await getProduct({
+      row: pageSize,
+      page: pageIndex * pageSize
+    })
+    setProduct(res.data.rows);
+    setCountProduct(res.data.count);
+  }
 
+  useEffect(() => {
     fetchProduk();
   }, [pageIndex, pageSize]);
 
@@ -43,6 +44,7 @@ export default function Page() {
         <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             Data Pengeluaran
         </CardTitle>
+        <AddModal onSuccess={fetchProduk} />
         <DataTable
             data={product}
             count={countProduct}

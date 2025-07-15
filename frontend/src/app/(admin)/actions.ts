@@ -70,6 +70,7 @@ export async function addProduct(data: {
     category_id: number
     name: string
     price: number
+    image: string
 }) {
     try {
         const res = await api.post("/product", data)
