@@ -2,16 +2,22 @@ require('dotenv').config();
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const bp = require("body-parser");
 const PORT = process.env.PORT
 const router = require("./routes/index")
-// const { Server } = require('socket.io');
+const http = require('http');
+const { Server } = require('socket.io');
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // sesuaikan dengan frontend kamu jika perlu
+    methods: ["GET", "POST"]
+  }
+});
 const path = require('path');
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// const io = new Server(server);
 
 app.use('/api', router)
 app.use('/api', express.static(path.join(__dirname, 'public/uploads')))
@@ -21,6 +27,10 @@ app.get("/", (req, res) => {
   console.log("test");
 });
 
-app.listen(PORT, () => {
+io.on('connection', (socket) => {
+  console.log('🔌 a user connected');
+});
+
+server.listen(PORT, () => {
   console.log(`dengar di ${PORT}`);
 });

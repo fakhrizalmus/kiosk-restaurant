@@ -1,6 +1,5 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -9,21 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { addCart, addCartItem, getCart, getCartItem, getCategory, getProduct } from "./actions";
 import { useParams } from "next/navigation";
-
-const menu = {
-  "veg pizza": [
-    { name: "Tandoori Paneer pizza", price: 255, image: "/images/tandoori.png" },
-    { name: "Double Cheese Margherita pizza", price: 185, image: "/images/doublecheese.png" },
-    { name: "Margherita Pizza", price: 145, image: "/images/margherita.png" },
-  ],
-  Sides: [
-    { name: "Classic Stuffed Garlic Bread", price: 145, image: "/images/garlic.png" },
-  ],
-  "Dessert & Beverages": [
-    { name: "Choco Lava Cake", price: 119, image: "/images/lava.png" },
-    { name: "Pepsi", price: 20, image: "/images/pepsi.png" },
-  ],
-};
+import { getSocket } from "@/lib/socket";
 
 export default function KioskPage() {
   const [product, setProduct] = useState<any[]>([])
@@ -31,7 +16,6 @@ export default function KioskPage() {
   const [cartItem, setCartItem] = useState<any[]>([])
   const [cart, setCart] = useState<any[]>([])
   const [selectedKategoriId, setSelectedKategoriId] = useState<number | undefined>(undefined);
-  const [selectedProductId, setSelectedProductId] = useState<number | undefined>(undefined);
   const [orderItems, setOrderItems] = useState<any[]>([]);
 
   const params = useParams();
@@ -67,7 +51,7 @@ export default function KioskPage() {
     };
 
     fetchProduct()
-  }, [selectedKategoriId, selectedProductId])
+  }, [selectedKategoriId])
 
   useEffect(() => {
     const fetchCartAndItems = async () => {
@@ -160,6 +144,13 @@ export default function KioskPage() {
       setCartItem(itemRes.data.rows);
       const cartRes = await getCart({ status: 'ongoing' }, kioskId);
       setCart(cartRes.data.rows);
+
+      const socket = getSocket();
+      socket.emit("new_order", {
+        cart_id: cartId,
+        table: kioskId,
+        items: orderItems,
+      });
     } catch (error) {
       console.error("Checkout gagal:", error);
     }
