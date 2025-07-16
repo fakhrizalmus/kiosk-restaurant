@@ -57,8 +57,22 @@ export function DataTable({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-  const columns = React.useMemo(() => getColumns(), [])
-  const [selectedData, setSelectedData] = React.useState<Pesanan>();
+  const onStatusChange = React.useCallback(
+    async (cartItemId: number, newStatus: "waiting" | "preparing" | "served") => {
+      try {
+        await fetch(`/api/cart-item/${cartItemId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        });
+        // Opsional: reload data
+      } catch (err) {
+        console.error("Gagal ubah status:", err);
+      }
+    },
+    []
+  );
+  const columns = React.useMemo(() => getColumns(onStatusChange), [onStatusChange])
 
   const table = useReactTable({
     data,
@@ -84,72 +98,72 @@ export function DataTable({
       <div className="-mx-4 rounded-xl bg-orange-500 px-4 py-4 flex flex-wrap gap-4 items-center">
         {/* Filter Status */}
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="bg-white text-black">
-                    Status: {selectedStatus ? selectedStatus : "Semua"} <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuCheckboxItem
-                    checked={selectedStatus === ""}
-                    onCheckedChange={() => setSelectedStatus("")}
-                >Semua</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                    checked={selectedStatus === "ongoing"}
-                    onCheckedChange={() => setSelectedStatus("ongoing")}
-                >Ongoing</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                    checked={selectedStatus === "end"}
-                    onCheckedChange={() => setSelectedStatus("end")}
-                >Selesai</DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="bg-white text-black">
+              Status: {selectedStatus ? selectedStatus : "Semua"} <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuCheckboxItem
+              checked={selectedStatus === ""}
+              onCheckedChange={() => setSelectedStatus("")}
+            >Semua</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={selectedStatus === "ongoing"}
+              onCheckedChange={() => setSelectedStatus("ongoing")}
+            >Ongoing</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={selectedStatus === "end"}
+              onCheckedChange={() => setSelectedStatus("end")}
+            >Selesai</DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
         </DropdownMenu>
         {/* Filter Meja */}
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="bg-white text-black">
-                    Meja: {noTable ? noTable : "Semua"} <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuCheckboxItem
-                    checked={noTable === null}
-                    onCheckedChange={() => setNoTable(null)}
-                >Semua</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                    checked={noTable === 1}
-                    onCheckedChange={() => setNoTable(1)}
-                >1</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                    checked={noTable === 2}
-                    onCheckedChange={() => setNoTable(2)}
-                >2</DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="bg-white text-black">
+              Meja: {noTable ? noTable : "Semua"} <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuCheckboxItem
+              checked={noTable === null}
+              onCheckedChange={() => setNoTable(null)}
+            >Semua</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={noTable === 1}
+              onCheckedChange={() => setNoTable(1)}
+            >1</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={noTable === 2}
+              onCheckedChange={() => setNoTable(2)}
+            >2</DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
         </DropdownMenu>
         {/* Button Columns */}
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto bg-white text-black">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
             {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => (
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => (
                 <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
                 >
-                    {column.id}
+                  {column.id}
                 </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuContent>
+              ))}
+          </DropdownMenuContent>
         </DropdownMenu>
-        </div>
+      </div>
       <div className="rounded-md border">
         <div className="overflow-y-auto max-h-[500px]">
           <Table>
