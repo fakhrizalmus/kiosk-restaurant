@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import clsx from "clsx"
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { Calendar, Hamburger, Home, Inbox, Settings } from "lucide-react"
 import { usePathname } from "next/navigation"
 
 const items = [
@@ -21,6 +21,11 @@ const items = [
     title: "Transaction",
     url: "/dashboard",
     icon: Home,
+  },
+  {
+    title: "Pesanan",
+    url: "/pesanan",
+    icon: Hamburger,
   },
   {
     title: "Product",
@@ -33,12 +38,12 @@ const items = [
     icon: Calendar,
   },
   {
-    title: "Search",
+    title: "Access",
     url: "#",
-    icon: Search,
+    icon: Settings,
   },
   {
-    title: "Settings",
+    title: "Role",
     url: "#",
     icon: Settings,
   },
