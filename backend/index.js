@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', router)
-app.use('/api', express.static(path.join(__dirname, 'public/uploads')))
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')))
 
 app.get("/", (req, res) => {
   res.send("halo");

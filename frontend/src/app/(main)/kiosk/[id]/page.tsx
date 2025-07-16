@@ -183,7 +183,7 @@ export default function KioskPage() {
               <Card key={i}>
                 <CardHeader className="p-2">
                   <img
-                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/images/${item.image}`}
+                    src={`${process.env.NEXT_PUBLIC_API_UPLOAD}/images/${item.image}`}
                     alt={item.name}
                     className="w-full h-32 object-cover rounded-md"
                   />

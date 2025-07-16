@@ -57,7 +57,7 @@ export function getColumns (
         header: "Image",
         cell: ({ row }) => {
           const imageName = row.getValue("image") as string
-          const imageUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/images/${imageName}`
+          const imageUrl = `${process.env.NEXT_PUBLIC_API_UPLOAD}/images/${imageName}`
           return (
             <img
               src={imageUrl}

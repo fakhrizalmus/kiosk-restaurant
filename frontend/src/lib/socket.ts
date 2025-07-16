@@ -5,7 +5,7 @@ let socket: Socket | null = null;
 
 export const getSocket = () => {
   if (!socket) {
-    socket = io(`${process.env.API_SOCKET}`);
+    socket = io(`${process.env.NEXT_PUBLIC_API_SOCKET}`);
   }
   return socket;
 };
