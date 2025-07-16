@@ -29,6 +29,17 @@ app.get("/", (req, res) => {
 
 io.on('connection', (socket) => {
   console.log('🔌 a user connected');
+
+  socket.on("disconnect", () => {
+    console.log("🔌 Client disconnected:", socket.id);
+  });
+
+  socket.on("new_order", (data) => {
+    console.log("🛎️ New Order:", data);
+
+    // Broadcast ke semua client lain (admin/dapur)
+    socket.broadcast.emit("new_order", data);
+  });
 });
 
 server.listen(PORT, () => {

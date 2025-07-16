@@ -149,7 +149,13 @@ export default function KioskPage() {
       socket.emit("new_order", {
         cart_id: cartId,
         table: kioskId,
-        items: orderItems,
+        items: orderItems.map(item => ({
+          ...item,
+          Product: {
+            name: item.name,
+            price: item.price,
+          }
+        }))
       });
     } catch (error) {
       console.error("Checkout gagal:", error);

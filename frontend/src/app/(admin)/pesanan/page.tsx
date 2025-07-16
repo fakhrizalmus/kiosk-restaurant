@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getSocket } from "@/lib/socket";
-import { toast } from "sonner";
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 import { DataTable } from "./data-table";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,46 +15,80 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { getPesanan } from "../actions";
 
 export default function PesananPage() {
   const [data, setData] = useState<any[]>([]);
+  const [countPesanan, setCountPesanan] = useState<number>(0);
   const [notifCount, setNotifCount] = useState(0);
   const [notifItems, setNotifItems] = useState<
-    { id: number; product: string; qty: number }[]
+    { id: number; product: string; qty: number; table: number }[]
   >([]);
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
+  const [noTable, setNoTable] = useState<number | null>(null);
 
-  useEffect(() => {
-    const socket = getSocket();
+    const fetchPesanan = async () => {
+        try {
+            const res = await getPesanan({
+                status: selectedStatus || undefined,
+                no_table: noTable !== null ? noTable : undefined,
+            });
 
-    socket.on("connect", () => {
-      console.log("✅ Socket connected (pesanan)");
-    });
+            const rows = res.data.rows || [];
+            const items: any[] = rows.flatMap((cart: any) =>
+                cart.CartItems.map((item: any) => ({
+                    id: item.id,
+                    cart_id: item.cart_id,
+                    no_table: cart.no_table,
+                    product_id: item.product_id,
+                    qty: item.qty,
+                    status: item.status,
+                }))
+            );
+    
+            setData(res.data.rows);
+            setCountPesanan(res.data.count);
+        } catch (error) {
+            console.error("Gagal fetch pesanan:", error);
+        }
+    }
 
-    socket.on("new_order", (newOrder) => {
-      toast.success(`Pesanan baru dari meja ${newOrder.table}`);
+    useEffect(() => {
+        const socket = getSocket();
 
-      const newItems = newOrder.items.map((item: any, i: number) => ({
-        id: newOrder.cart_id * 1000 + i,
-        product: item.name,
-        qty: item.qty,
-        status: "waiting",
-      }));
+        socket.on("connect", () => {
+            console.log("✅ Socket connected (pesanan)");
+        });
 
-      const notifData = newOrder.items.map((item: any) => ({
-        id: newOrder.cart_id,
-        product: item.name,
-        qty: item.qty,
-      }));
+        socket.on("new_order", async (newOrder) => {
+            toastr.success(`Pesanan baru dari meja ${newOrder.table}`);
 
-      setData((prev) => [...prev, ...newItems]);
-      setNotifItems((prev) => [...notifData, ...prev]);
-      setNotifCount((prev) => prev + notifData.length);
-    });
+            await fetchPesanan();
 
-    return () => {
-      socket.disconnect();
+            const notifData = newOrder.items.map((item: any) => ({
+                id: newOrder.cart_id,
+                product: item.Product?.name ?? `ID ${item.product_id}`,
+                qty: item.qty,
+                table: newOrder.table,
+            }));
+
+            setNotifItems((prev) => [...notifData, ...prev]);
+            setNotifCount((prev) => prev + notifData.length);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+    useEffect(() => {
+        fetchPesanan();
+    }, [selectedStatus, noTable]);
+
+    const handleMarkAsRead = () => {
+        setNotifItems([]);
+        setNotifCount(0);
     };
-  }, []);
 
   return (
     <div className="p-6">
@@ -74,23 +109,41 @@ export default function PesananPage() {
             <DropdownMenuLabel>Notifikasi Pesanan Baru</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {notifItems.length === 0 ? (
-              <DropdownMenuItem disabled>Tidak ada notifikasi</DropdownMenuItem>
+              <DropdownMenuItem disabled>
+                Tidak ada notifikasi
+              </DropdownMenuItem>
             ) : (
-              notifItems.slice(0, 5).map((item, index) => (
-                <DropdownMenuItem key={index}>
-                  <div>
-                    <p className="font-medium">{item.product}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Qty: {item.qty} | ID Cart: {item.id}
-                    </p>
-                  </div>
+              <>
+                {notifItems.slice(0, 5).map((item, index) => (
+                  <DropdownMenuItem key={index}>
+                    <div>
+                      <p className="font-medium">{item.product}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Qty: {item.qty} | Meja: {item.table}
+                      </p>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-sm text-center justify-center text-blue-600 cursor-pointer"
+                  onClick={handleMarkAsRead}
+                >
+                  Tandai sudah dibaca
                 </DropdownMenuItem>
-              ))
+              </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <DataTable data={data} />
+      <DataTable 
+        data={data} 
+        count={countPesanan}
+        selectedStatus={selectedStatus}
+        setSelectedStatus={setSelectedStatus}
+        noTable={noTable}
+        setNoTable={setNoTable}
+      />
     </div>
   );
 }

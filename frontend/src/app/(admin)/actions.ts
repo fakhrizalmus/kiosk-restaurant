@@ -210,3 +210,19 @@ export async function deleteCategory(id: number) {
         throw error
     }
 }
+
+//pesanan
+type GetPesananParams = {
+    page?: number
+    row?: number
+    id?: number
+    status?: string
+    no_table?: number
+}
+
+export async function getPesanan(params: GetPesananParams) {
+    const res = await api.get(`/pesanan`, {
+        params: params || {},
+    })
+    return res.data
+}
