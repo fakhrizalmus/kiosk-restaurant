@@ -70,7 +70,11 @@ const addCartItem = async (req, res) => {
 const updateCartItem = async (req, res) => {
     const {id} = req.params
     const {product_id, qty, status} = req.body
-    const cariCartItem = await CartItem.findByPk(id)
+    const cariCartItem = await CartItem.findByPk(id, {
+        include: [
+            {model: model.Cart}
+        ]
+    })
     if (!cariCartItem) {
         return res.status(400).json({
             message: 'CartItem tidak ditemukan'
@@ -89,16 +93,12 @@ const updateCartItem = async (req, res) => {
 
     const noTable = cariCartItem.Cart?.no_table;
     if (noTable && req.io) {
-      req.io.to(`table_${noTable}`).emit("cart_item_updated", {
-        id: updateCartItem.id,
-        cart_id: updateCartItem.cart_id,
-        status: updateCartItem.status,
-        qty: updateCartItem.qty,
-        product: {
-          name: cariCartItem.Product?.name || '',
-          price: cariCartItem.Product?.price || 0,
-        }
-      });
+        req.io.to(`table_${noTable}`).emit("cart_item_updated", {
+            id: updateCartItem.id,
+            cart_id: updateCartItem.cart_id,
+            status: updateCartItem.status,
+            qty: updateCartItem.qty
+        });
     }
     
     if (updateCartItem) {

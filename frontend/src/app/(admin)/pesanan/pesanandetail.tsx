@@ -40,23 +40,32 @@ type Props = {
 
 export function PesananDetailDialog({ id, onStatusChange }: Props) {
     const [pesanan, setPesanan] = useState<Pesanan | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
+
     const refetch = async () => {
         const res = await getPesanan({ id });
         setPesanan(res.data.rows[0]);
     };
 
     useEffect(() => {
-        refetch();
-    }, [id]);
+        if (isOpen) {
+            refetch();
+        }
+    }, [id, isOpen]);
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" className="h-8 w-fit p-2" style={{ backgroundColor: "var(--primary)" }}>
+                <Button
+                    onClick={() => console.log("Trigger clicked")}
+                    variant="ghost"
+                    className="h-8 w-fit p-2"
+                    style={{ backgroundColor: "var(--primary)" }}
+                >
                     Detail
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Pesanan Meja {pesanan?.no_table ?? '-'}</DialogTitle>
                 </DialogHeader>
