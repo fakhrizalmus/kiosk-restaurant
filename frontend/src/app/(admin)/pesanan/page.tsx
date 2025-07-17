@@ -56,28 +56,34 @@ export default function PesananPage() {
     useEffect(() => {
         const socket = getSocket();
 
+        const handleNewOrder = async (newOrder: any) => {
+          // Tampilkan notifikasi
+          toastr.success(`Pesanan baru dari meja ${newOrder.table}`);
+
+          // Ambil ulang data pesanan terbaru
+          await fetchPesanan();
+
+          // Update state notifikasi
+          const notifData = newOrder.items.map((item: any) => ({
+            id: newOrder.cart_id,
+            product: item.Product?.name ?? `ID ${item.product_id}`,
+            qty: item.qty,
+            table: newOrder.table,
+          }));
+
+          setNotifItems((prev) => [...notifData, ...prev]);
+          setNotifCount((prev) => prev + notifData.length);
+        };
+
         socket.on("connect", () => {
-            console.log("✅ Socket connected (pesanan)");
+          console.log("✅ Socket connected to dapur");
         });
 
-        socket.on("new_order", async (newOrder) => {
-            toastr.success(`Pesanan baru dari meja ${newOrder.table}`);
-
-            await fetchPesanan();
-
-            const notifData = newOrder.items.map((item: any) => ({
-                id: newOrder.cart_id,
-                product: item.Product?.name ?? `ID ${item.product_id}`,
-                qty: item.qty,
-                table: newOrder.table,
-            }));
-
-            setNotifItems((prev) => [...notifData, ...prev]);
-            setNotifCount((prev) => prev + notifData.length);
-        });
+        socket.on("new_order", handleNewOrder);
 
         return () => {
-            socket.disconnect();
+          socket.off("connect");
+          socket.off("new_order", handleNewOrder);
         };
     }, []);
 
