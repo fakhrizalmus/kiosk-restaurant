@@ -86,6 +86,21 @@ const updateCartItem = async (req, res) => {
         cariCartItem.qty = qty
     }
     const updateCartItem = await cariCartItem.save()
+
+    const noTable = cariCartItem.Cart?.no_table;
+    if (noTable && req.io) {
+      req.io.to(`table_${noTable}`).emit("cart_item_updated", {
+        id: updateCartItem.id,
+        cart_id: updateCartItem.cart_id,
+        status: updateCartItem.status,
+        qty: updateCartItem.qty,
+        product: {
+          name: cariCartItem.Product?.name || '',
+          price: cariCartItem.Product?.price || 0,
+        }
+      });
+    }
+    
     if (updateCartItem) {
         return res.status(200).json({
             data: updateCartItem

@@ -19,6 +19,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
 app.use('/api', router)
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')))
 
@@ -39,6 +44,11 @@ io.on('connection', (socket) => {
 
     // Broadcast ke semua client lain (admin/dapur)
     socket.broadcast.emit("new_order", data);
+  });
+
+  socket.on("join_table", (room) => {
+    socket.join(room);
+    console.log("Pelanggan bergabung ke", room);
   });
 });
 

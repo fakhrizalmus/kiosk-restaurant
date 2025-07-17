@@ -12,7 +12,7 @@ export type Pesanan = {
 };
 
 export function getColumns(
-  onStatusChange: (cartItemId: number, newStatus: "waiting" | "preparing" | "served") => void
+  onStatusChange: (cartItemId: number, newStatus: "waiting" | "preparing" | "served") => Promise<void>
 ): ColumnDef<Pesanan>[] {
   return [
     { accessorKey: "id", header: "ID" },
@@ -32,7 +32,7 @@ export function getColumns(
       cell: ({ row }) => {
         return (
           <PesananDetailDialog
-            id={Number(row.id)}
+            id={Number(row.original.id)}
             onStatusChange={onStatusChange}
           />
         )

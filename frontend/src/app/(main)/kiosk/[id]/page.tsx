@@ -74,6 +74,26 @@ export default function KioskPage() {
   }, [kioskId]);
 
   useEffect(() => {
+    const socket = getSocket();
+    socket.emit("join_table", `table_${kioskId}`); // join room sesuai no meja
+
+    socket.on("cart_item_updated", (updatedItem) => {
+      setCartItem((prev) =>
+        prev.map((item) =>
+          item.id === updatedItem.id
+            ? { ...item, status: updatedItem.status }
+            : item
+        )
+      );
+    });
+
+    return () => {
+      socket.off("cart_item_updated");
+    };
+  }, [kioskId]);
+
+
+  useEffect(() => {
     if (kategori.length > 0 && selectedKategoriId === undefined) {
       setSelectedKategoriId(kategori[0].id);
     }

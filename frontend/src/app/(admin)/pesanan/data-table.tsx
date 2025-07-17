@@ -35,6 +35,7 @@ import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight 
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getColumns, Pesanan } from "./columns"
+import { updateCartItem } from "../actions"
 
 type Props = {
   data: Pesanan[]
@@ -58,17 +59,8 @@ export function DataTable({
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const onStatusChange = React.useCallback(
-    async (cartItemId: number, newStatus: "waiting" | "preparing" | "served") => {
-      try {
-        await fetch(`/api/cart-item/${cartItemId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: newStatus }),
-        });
-        // Opsional: reload data
-      } catch (err) {
-        console.error("Gagal ubah status:", err);
-      }
+    (cartItemId: number, newStatus: "waiting" | "preparing" | "served") => {
+      return updateCartItem(cartItemId, { status: newStatus });
     },
     []
   );

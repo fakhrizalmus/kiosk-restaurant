@@ -35,23 +35,19 @@ type Pesanan = {
 
 type Props = {
     id: number;
-    onStatusChange?: (cartItemId: number, newStatus: CartItem["status"]) => void;
+    onStatusChange?: (cartItemId: number, newStatus: CartItem["status"]) => Promise<void>;
 };
 
 export function PesananDetailDialog({ id, onStatusChange }: Props) {
     const [pesanan, setPesanan] = useState<Pesanan | null>(null);
+    const refetch = async () => {
+        const res = await getPesanan({ id });
+        setPesanan(res.data.rows[0]);
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            const res = await getPesanan({
-                id: id ?? undefined
-            });
-
-            setPesanan(res.data.rows[0]);
-        }
-
-        fetchData();
+        refetch();
     }, [id]);
-    console.log(pesanan);
 
     return (
         <Dialog>
@@ -77,9 +73,13 @@ export function PesananDetailDialog({ id, onStatusChange }: Props) {
                                     <Label className="text-xs mb-1">Status</Label>
                                     <Select
                                         value={item.status}
-                                        onValueChange={(value) =>
+                                        onValueChange={(value) => {
                                             onStatusChange?.(item.id, value as CartItem["status"])
-                                        }
+                                                ?.then(refetch)
+                                                .catch((err) => {
+                                                    console.error("Update status gagal", err);
+                                                });
+                                        }}
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Status" />
