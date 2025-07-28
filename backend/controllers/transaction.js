@@ -1,8 +1,9 @@
-const {Transaction} = require('../models')
+const {Transaction, Cart} = require('../models')
+const model = require('../models');
 
 const getTransaction = async (req, res) => {
     try {
-        let user_id = req.user.id
+        // let user_id = req.user.id
         let {page, row, cart_id, total, paid_at} = req.query
         const where = {}
 
@@ -23,7 +24,7 @@ const getTransaction = async (req, res) => {
         const options = {
             include: [
                 {model: model.Cart},
-                {model: model.User}
+                // {model: model.User}
             ],
             where,
             order: [
@@ -110,9 +111,57 @@ const deleteTransaction = async (req, res) => {
     }
 }
 
+const getTransactionCart = async (req, res) => {
+    try {
+        // let user_id = req.user.id
+        let {page, row, id, no_table} = req.query
+        const where = {}
+
+        if (id) {
+            where.id = id
+        }
+
+        if (no_table) {
+            where.no_table = no_table
+        }
+
+        // where.user_id = user_id
+
+        const options = {
+            include: [
+                {model: model.Transaction},
+                // {model: model.User},
+                {
+                    model: model.CartItem,
+                    include: [
+                        {model: model.Product}
+                    ]
+                }
+            ],
+            where,
+            order: [
+                ['createdAt', 'DESC']
+            ]
+        }
+
+        if (page) options.offset = parseInt(page);
+        if (row) options.limit = parseInt(row) || 10;
+
+        const getTransaction = await Cart.findAndCountAll(options)
+        return res.status(200).json({
+            data: getTransaction
+        })
+    } catch (error) {
+        return res.status(400).json({
+            message: error.message
+        })
+    }
+}
+
 module.exports = {
     getTransaction,
     addTransaction,
     updateTransaction,
-    deleteTransaction
+    deleteTransaction,
+    getTransactionCart
 }

@@ -226,3 +226,15 @@ export async function getPesanan(params: GetPesananParams) {
     })
     return res.data
 }
+
+export async function getPesananDetail(id: number) {
+    const res = await api.get(`/pesanan/${id}`)
+    return res.data
+}
+
+export async function getTransactionCart(params: GetCartParams) {
+    const res = await api.get(`/transaction/kasir`, {
+        params: params || {},
+    })
+    return res.data
+}

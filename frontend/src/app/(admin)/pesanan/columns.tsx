@@ -15,7 +15,10 @@ export function getColumns(
   onStatusChange: (cartItemId: number, newStatus: "waiting" | "preparing" | "served") => Promise<void>
 ): ColumnDef<Pesanan>[] {
   return [
-    { accessorKey: "id", header: "ID" },
+    {
+      header: "No",
+      cell: ({ row }) => row.index + 1,
+    },
     { accessorKey: "no_table", header: "No Meja" },
     {
       accessorKey: "createdAt",
@@ -25,7 +28,17 @@ export function getColumns(
         return moment(rawDate).format("DD MMMM YYYY HH:mm");
       },
     },
-    { accessorKey: "status", header: "Status" },
+    {
+      header: "Status",
+      cell: ({ row }) => {
+        switch (row.original.status) {
+          case 'end':
+            return 'End';
+          default:
+            return 'Ongoing';
+        }
+      }
+    },
     {
       id: "actions",
       enableHiding: false,

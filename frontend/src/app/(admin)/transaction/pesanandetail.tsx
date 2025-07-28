@@ -12,10 +12,12 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { getPesananDetail } from "../actions";
+import { formatToRupiah } from "@/lib/utils";
 
 type Product = {
     id: number;
     name: string;
+    price: number;
 };
 
 type CartItem = {
@@ -53,6 +55,10 @@ export function PesananDetailDialog({ id, onStatusChange }: Props) {
         }
     }, [id, isOpen]);
 
+    const totalHarga = pesanan?.CartItems.reduce((acc, item) => {
+        return acc + (item.Product.price * item.qty);
+    }, 0) ?? 0;
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
@@ -77,32 +83,18 @@ export function PesananDetailDialog({ id, onStatusChange }: Props) {
                                 <div>
                                     <p className="font-medium">{item.Product.name}</p>
                                     <p className="text-sm text-muted-foreground">Qty: {item.qty}</p>
+                                    <p className="text-sm text-muted-foreground">Status: {item.status}</p>
                                 </div>
                                 <div className="w-40">
-                                    <Label className="text-xs mb-1">Status</Label>
-                                    <Select
-                                        value={item.status}
-                                        onValueChange={(value) => {
-                                            onStatusChange?.(item.id, value as CartItem["status"])
-                                                ?.then(refetch)
-                                                .catch((err) => {
-                                                    console.error("Update status gagal", err);
-                                                });
-                                        }}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="waiting">Waiting</SelectItem>
-                                            <SelectItem value="preparing">Preparing</SelectItem>
-                                            <SelectItem value="served">Served</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <Label className="text-xs mb-1">Harga</Label>
+                                    <p>{formatToRupiah(item.Product?.price)}</p>
                                 </div>
                             </div>
                         </div>
                     ))}
+                </div>
+                <div>
+                    Total: {formatToRupiah(totalHarga)}
                 </div>
             </DialogContent>
         </Dialog>

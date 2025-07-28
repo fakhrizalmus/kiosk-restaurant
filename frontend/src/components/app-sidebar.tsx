@@ -19,7 +19,7 @@ import { usePathname } from "next/navigation"
 const items = [
   {
     title: "Transaction",
-    url: "/dashboard",
+    url: "/transaction",
     icon: Home,
   },
   {

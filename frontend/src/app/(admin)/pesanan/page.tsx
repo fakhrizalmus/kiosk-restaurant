@@ -27,74 +27,64 @@ export default function PesananPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [noTable, setNoTable] = useState<number | null>(null);
 
-    const fetchPesanan = async () => {
-        try {
-            const res = await getPesanan({
-                status: selectedStatus || undefined,
-                no_table: noTable !== null ? noTable : undefined,
-            });
+  const fetchPesanan = async () => {
+    try {
+      const res = await getPesanan({
+        status: selectedStatus || undefined,
+        no_table: noTable !== null ? noTable : undefined,
+      });
 
-            const rows = res.data.rows || [];
-            const items: any[] = rows.flatMap((cart: any) =>
-                cart.CartItems.map((item: any) => ({
-                    id: item.id,
-                    cart_id: item.cart_id,
-                    no_table: cart.no_table,
-                    product_id: item.product_id,
-                    qty: item.qty,
-                    status: item.status,
-                }))
-            );
-    
-            setData(res.data.rows);
-            setCountPesanan(res.data.count);
-        } catch (error) {
-            console.error("Gagal fetch pesanan:", error);
-        }
+      const rows = res.data.rows || [];
+
+      setData(res.data.rows);
+      setCountPesanan(res.data.count);
+    } catch (error) {
+      console.error("Gagal fetch pesanan:", error);
     }
+  }
 
-    useEffect(() => {
-        const socket = getSocket();
+  useEffect(() => {
+    const socket = getSocket();
 
-        const handleNewOrder = async (newOrder: any) => {
-          // Tampilkan notifikasi
-          toastr.success(`Pesanan baru dari meja ${newOrder.table}`);
+    const handleNewOrder = async (newOrder: any) => {
+      // Tampilkan notifikasi
+      toastr.success(`Pesanan baru dari meja ${newOrder.table}`);
 
-          // Ambil ulang data pesanan terbaru
-          await fetchPesanan();
+      // Ambil ulang data pesanan terbaru
+      await fetchPesanan();
 
-          // Update state notifikasi
-          const notifData = newOrder.items.map((item: any) => ({
-            id: newOrder.cart_id,
-            product: item.Product?.name ?? `ID ${item.product_id}`,
-            qty: item.qty,
-            table: newOrder.table,
-          }));
+      // Update state notifikasi
+      const notifData = newOrder.items.map((item: any) => ({
+        id: newOrder.cart_id,
+        product: item.Product?.name ?? `ID ${item.product_id}`,
+        qty: item.qty,
+        table: newOrder.table,
+      }));
 
-          setNotifItems((prev) => [...notifData, ...prev]);
-          setNotifCount((prev) => prev + notifData.length);
-        };
-
-        socket.on("connect", () => {
-          console.log("✅ Socket connected to dapur");
-        });
-
-        socket.on("new_order", handleNewOrder);
-
-        return () => {
-          socket.off("connect");
-          socket.off("new_order", handleNewOrder);
-        };
-    }, []);
-
-    useEffect(() => {
-        fetchPesanan();
-    }, [selectedStatus, noTable]);
-
-    const handleMarkAsRead = () => {
-        setNotifItems([]);
-        setNotifCount(0);
+      setNotifItems((prev) => [...notifData, ...prev]);
+      setNotifCount((prev) => prev + notifData.length);
     };
+
+    socket.on("connect", () => {
+      console.log("✅ Socket connected to dapur");
+    });
+
+    socket.on("new_order", handleNewOrder);
+
+    return () => {
+      socket.off("connect");
+      socket.off("new_order", handleNewOrder);
+    };
+  }, []);
+
+  useEffect(() => {
+    fetchPesanan();
+  }, [selectedStatus, noTable]);
+
+  const handleMarkAsRead = () => {
+    setNotifItems([]);
+    setNotifCount(0);
+  };
 
   return (
     <div className="p-6">
@@ -142,8 +132,8 @@ export default function PesananPage() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <DataTable 
-        data={data} 
+      <DataTable
+        data={data}
         count={countPesanan}
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}

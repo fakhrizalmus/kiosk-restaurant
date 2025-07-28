@@ -149,7 +149,7 @@ export default function KioskPage() {
       } else {
         cartId = cart[0].id;
       }
-  
+
       for (let i = 0; i < orderItems.length; i++) {
         await addCartItem({
           cart_id: cartId,
@@ -157,9 +157,9 @@ export default function KioskPage() {
           qty: orderItems[i].qty
         })
       };
-  
+
       setOrderItems([]);
-  
+
       const itemRes = await getCartItem({ cart_id: cartId });
       setCartItem(itemRes.data.rows);
       const cartRes = await getCart({ status: 'ongoing' }, kioskId);
@@ -186,6 +186,12 @@ export default function KioskPage() {
     setOrderItems([]);
   }
 
+  const statusLabel: Record<string, string> = {
+    waiting: "Waiting",
+    preparing: "Preparing",
+    served: "Served",
+  };
+
   return (
     <div className="grid grid-cols-3 h-screen">
       {/* Menu */}
@@ -206,35 +212,35 @@ export default function KioskPage() {
 
         <div className="grid grid-cols-3 gap-4">
           {product.map((item, i) => (
-              <Card key={i}>
-                <CardHeader className="p-2">
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_API_UPLOAD}/images/${item.image}`}
-                    alt={item.name}
-                    className="w-full h-32 object-cover rounded-md"
-                  />
-                </CardHeader>
-                <CardContent className="p-4">
-                  <CardTitle className="text-base">{item.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0
-                    }).format(item.price)}</p>
-                  {
-                    orderItems.find((order) => order.product_id === item.id) ? (
-                      <Button className="mt-2 w-full" disabled variant="outline">
-                        Added
-                      </Button>
-                    ) : (
-                      <Button className="mt-2 w-full" onClick={() => handleAddToOrder(item)}>
-                        + Add
-                      </Button>
-                    )
-                  }
-                </CardContent>
-              </Card>
-            ))}
+            <Card key={i}>
+              <CardHeader className="p-2">
+                <img
+                  src={`${process.env.NEXT_PUBLIC_API_UPLOAD}/images/${item.image}`}
+                  alt={item.name}
+                  className="w-full h-32 object-cover rounded-md"
+                />
+              </CardHeader>
+              <CardContent className="p-4">
+                <CardTitle className="text-base">{item.name}</CardTitle>
+                <p className="text-sm text-muted-foreground">{new Intl.NumberFormat("id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                  minimumFractionDigits: 0
+                }).format(item.price)}</p>
+                {
+                  orderItems.find((order) => order.product_id === item.id) ? (
+                    <Button className="mt-2 w-full" disabled variant="outline">
+                      Added
+                    </Button>
+                  ) : (
+                    <Button className="mt-2 w-full" onClick={() => handleAddToOrder(item)}>
+                      + Add
+                    </Button>
+                  )
+                }
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
 
@@ -253,8 +259,8 @@ export default function KioskPage() {
                     item.status === "waiting"
                       ? "bg-yellow-500 border-yellow-600"
                       : item.status === "preparing"
-                      ? "bg-blue-500 border-blue-600"
-                      : "bg-green-600 border-green-700";
+                        ? "bg-blue-500 border-blue-600"
+                        : "bg-green-600 border-green-700";
 
                   return (
                     <div
@@ -268,7 +274,7 @@ export default function KioskPage() {
                       <span
                         className={`text-xs text-white font-semibold px-3 py-1 rounded-full border ${statusColor}`}
                       >
-                        {item.status}
+                        {statusLabel[item.status] || item.status}
                       </span>
                     </div>
                   );
