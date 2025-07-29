@@ -62,39 +62,42 @@ export function PesananDetailDialog({ id, onStatusChange }: Props) {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button
-                    onClick={() => console.log("Trigger clicked")}
-                    variant="ghost"
-                    className="h-8 w-fit p-2"
-                    style={{ backgroundColor: "var(--primary)" }}
-                >
-                    Detail
+                <Button variant="ghost" className="h-8 w-fit p-2 bg-primary text-white">
+                Detail
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>Pesanan Meja {pesanan?.no_table ?? '-'}</DialogTitle>
-                </DialogHeader>
-
-                <div className="space-y-4">
+            <DialogContent className="max-w-lg max-h-[80vh] flex flex-col justify-between">
+                <div className="space-y-4 overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-lg">Detail Pesanan - Meja {pesanan?.no_table ?? '-'}</DialogTitle>
+                    </DialogHeader>
                     {pesanan?.CartItems.map((item) => (
-                        <div key={item.id} className="border-b pb-3">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <p className="font-medium">{item.Product.name}</p>
-                                    <p className="text-sm text-muted-foreground">Qty: {item.qty}</p>
-                                    <p className="text-sm text-muted-foreground">Status: {item.status}</p>
-                                </div>
-                                <div className="w-40">
-                                    <Label className="text-xs mb-1">Harga</Label>
-                                    <p>{formatToRupiah(item.Product?.price)}</p>
-                                </div>
+                        <div key={item.id} className="border rounded-md p-3">
+                        <div className="flex justify-between">
+                            <div>
+                            <p className="font-medium">{item.Product.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                                Qty: {item.qty} &bull; Status: {item.status}
+                            </p>
                             </div>
+                            <div className="text-right">
+                            <Label className="text-sm text-muted-foreground">Harga</Label>
+                            <p className="font-semibold">{formatToRupiah(item.Product.price)}</p>
+                            </div>
+                        </div>
                         </div>
                     ))}
                 </div>
-                <div>
-                    Total: {formatToRupiah(totalHarga)}
+
+                {/* Footer Total & Bayar Sekarang */}
+                <div className="border-t pt-4 mt-4">
+                <div className="flex justify-between items-center mb-3">
+                    <p className="font-semibold text-lg">Total Bayar</p>
+                    <p className="font-bold text-xl text-green-600">{formatToRupiah(totalHarga)}</p>
+                </div>
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                    Bayar Sekarang
+                </Button>
                 </div>
             </DialogContent>
         </Dialog>
