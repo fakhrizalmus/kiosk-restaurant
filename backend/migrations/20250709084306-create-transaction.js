@@ -1,4 +1,7 @@
 'use strict';
+
+const { sequelize } = require('../models');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -10,16 +13,33 @@ module.exports = {
         type: Sequelize.BIGINT
       },
       cart_id: {
-        type: Sequelize.BIGINT
+        type: Sequelize.BIGINT,
+        allowNull: false
       },
       user_id: {
-        type: Sequelize.BIGINT
+        type: Sequelize.BIGINT,
+        allowNull: false
+      },
+      payment_method: {
+        type: Sequelize.ENUM('cash', 'qris', 'card', 'transfer'),
+        allowNull: false,
+        defaultValue: 'cash'
+      },
+      tax: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      change_returned: {
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       total: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       paid_at: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,

@@ -21,6 +21,9 @@ module.exports = (sequelize, DataTypes) => {
   Transaction.init({
     cart_id: DataTypes.INTEGER,
     user_id: DataTypes.INTEGER,
+    payment_method: DataTypes.ENUM('cash', 'qris', 'card', 'transfer'),
+    tax: DataTypes.INTEGER,
+    change_returned: DataTypes.INTEGER,
     total: DataTypes.INTEGER,
     paid_at: DataTypes.DATE
   }, {
