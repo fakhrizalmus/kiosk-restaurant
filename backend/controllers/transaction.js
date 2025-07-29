@@ -48,14 +48,20 @@ const getTransaction = async (req, res) => {
 
 const addTransaction = async (req, res) => {
     try {
-        const {cart_id, total} = req.body
-        const TransactionData = {
+        const {cart_id, total, payment_method, tax, change_returned} = req.body
+        const payloadTransaction = {
             cart_id: cart_id,
+            payment_method: payment_method,
+            tax: tax,
+            change_returned: change_returned,
             total: total,
             paid_at: new Date()
         }
 
-        const addTransaction = await Transaction.create(TransactionData)
+        const addTransaction = await Transaction.create(payloadTransaction)
+        const cariCart = await Cart.findByPk(cart_id);
+        cariCart.status = 'end'
+        const updateCart = await Cart.save(cariCart);
         return res.status(200).json({
             data: addTransaction
         })
