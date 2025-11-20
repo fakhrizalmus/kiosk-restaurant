@@ -34,7 +34,7 @@ const items = [
   },
   {
     title: "Category",
-    url: "#",
+    url: "/category",
     icon: Calendar,
   },
   {

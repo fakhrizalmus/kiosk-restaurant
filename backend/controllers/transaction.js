@@ -61,7 +61,7 @@ const addTransaction = async (req, res) => {
         const addTransaction = await Transaction.create(payloadTransaction)
         const cariCart = await Cart.findByPk(cart_id);
         cariCart.status = 'end'
-        const updateCart = await Cart.save(cariCart);
+        const updateCart = await cariCart.save();
         return res.status(200).json({
             data: addTransaction
         })

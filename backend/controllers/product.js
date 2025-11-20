@@ -63,7 +63,8 @@ const addProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     const {id} = req.params
-    const {category_id, name, price, image} = req.body
+    const {category_id, name, price} = req.body
+    const image = req.file?.filename;
     const cariProduct = await Product.findByPk(id)
     if (!cariProduct) {
         return res.status(400).json({

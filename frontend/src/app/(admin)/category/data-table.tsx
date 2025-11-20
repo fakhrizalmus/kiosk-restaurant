@@ -34,13 +34,13 @@ import {
 import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getColumns, Product } from "./columns"
+import { getColumns, Category } from "./columns"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { getProduct } from "../actions"
+import { getCategory } from "../actions"
 import EditModal from "./editmodal"
 
 type Props = {
-  data: Product[]
+  data: Category[]
   count: number
   pageSize: number | 10
   pageIndex: number | 0
@@ -67,11 +67,11 @@ export function DataTable({
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const columns = React.useMemo(() => getColumns(setSelectedIdToDelete, setSelectedIdToEdit), [])
-  const [selectedData, setSelectedData] = React.useState<Product>();
+  const [selectedData, setSelectedData] = React.useState<Category>();
 
   React.useEffect(() => {
     const fetchProduk = async () => {
-      const res = await getProduct({
+      const res = await getCategory({
         id: selectedIdToDelete ?? undefined
       })
 
@@ -147,6 +147,7 @@ export function DataTable({
           }}
         />
       )}
+
       <div className="-mx-4 rounded-xl bg-orange-500 px-4 py-4 flex items-center">
         <Input
           placeholder="Cari nama..."

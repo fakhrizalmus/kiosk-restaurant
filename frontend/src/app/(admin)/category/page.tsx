@@ -2,38 +2,38 @@
 
 import { useEffect, useState } from "react"
 import { DataTable } from "./data-table"
-import { deleteProduct, getProduct } from "../actions"
 import { CardTitle } from "@/components/ui/card"
 import AddModal from "./addmodal"
+import { deleteCategory, getCategory } from "../actions"
 
 export default function Page() {
-  const [product, setProduct] = useState<any[]>([]);
-  const [countProduct, setCountProduct] = useState<number>(0);
+  const [category, setCategory] = useState<any[]>([]);
+  const [countCategory, setCountCategory] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(10)
   const [pageIndex, setPageIndex] = useState<number>(0)
 
-  const fetchProduk = async () => {
-    const res = await getProduct({
+  const fetchCategory = async () => {
+    const res = await getCategory({
       row: pageSize,
       page: pageIndex * pageSize
     })
-    setProduct(res.data.rows);
-    setCountProduct(res.data.count);
+    setCategory(res.data.rows);
+    setCountCategory(res.data.count);
   }
 
   useEffect(() => {
-    fetchProduk();
+    fetchCategory();
   }, [pageIndex, pageSize]);
 
   const handleDelete = async (id: number) => {
     try {
-      await deleteProduct(id)
-      const res = await getProduct({
+      await deleteCategory(id)
+      const res = await getCategory({
         row: pageSize,
         page: pageIndex * pageSize
       })
-      setProduct(res.data.rows);
-      setCountProduct(res.data.count)
+      setCategory(res.data.rows);
+      setCountCategory(res.data.count)
     } catch (error) {
       console.error("Gagal menghapus data:", error)
     }
@@ -42,13 +42,13 @@ export default function Page() {
     <div className="flex flex-1 flex-col w-full px-6">
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
         <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-          List Produk
-          <AddModal onSuccess={fetchProduk} />
+          List Category
+          <AddModal onSuccess={fetchCategory} />
         </CardTitle>
         <DataTable
-          data={product}
-          refetch={fetchProduk}
-          count={countProduct}
+          data={category}
+          refetch={fetchCategory}
+          count={countCategory}
           pageIndex={pageIndex}
           pageSize={pageSize}
           setPageIndex={setPageIndex}

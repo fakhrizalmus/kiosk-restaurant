@@ -89,9 +89,14 @@ export async function updateProduct(data: {
     category_id?: number
     name?: string
     price?: number
+    image?: File | null
 }, id: number) {
     try {
-        const res = await api.put(`/product/${id}`, data)
+        const res = await api.put(`/product/${id}`, data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
         return res.data
     } catch (error) {
         console.error("Gagal update product", error)
@@ -237,4 +242,21 @@ export async function getTransactionCart(params: GetCartParams) {
         params: params || {},
     })
     return res.data
+}
+
+//transaction
+export async function addTransaction(data: {
+    cart_id?: number
+    total?: number
+    payment_method?: string
+    tax?: number
+    change_returned?: number
+}) {
+    try {
+        const res = await api.post("/transaction", data)
+        return res.data
+    } catch (error) {
+        console.error("Gagal tambah transaction", error)
+        throw error
+    }
 }
