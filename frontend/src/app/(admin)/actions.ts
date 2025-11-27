@@ -260,3 +260,51 @@ export async function addTransaction(data: {
         throw error
     }
 }
+
+//permission
+export async function getPermission(params: {
+    id?: number
+    page?: number
+    row?: number
+}) {
+    const res = await api.get("/permission", {
+        params: params || {}
+    })
+    return res.data
+}
+
+export async function addPermission(data: {
+    name: string,
+    description: string
+}) {
+    try {
+        const res = await api.post("/permission", data)
+        return res.data
+    } catch (error) {
+        console.error("Gagal menyimpan permission", error)
+        throw error
+    }
+}
+
+export async function updatePermission(data: {
+    name: string,
+    description: string
+}, id: number) {
+    try {
+        const res = await api.put(`/permission/${id}`, data)
+        return res.data
+    } catch (error) {
+        console.error("Gagal update permission", error)
+        throw error
+    }
+}
+
+export async function deletePermission(id: number) {
+    try {
+        const res = await api.delete(`/permission/${id}`)
+        return res.data
+    } catch (error) {
+        console.error("Gagal delete permission", error)
+        throw error
+    }
+}
