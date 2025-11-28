@@ -9,11 +9,8 @@ import { useState } from "react";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
 import { addRole } from "../actions";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+import { motion, AnimatePresence } from "framer-motion"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface AddModalProps {
   onSuccess: () => void
@@ -21,7 +18,7 @@ interface AddModalProps {
 
 export default function AddModal({ onSuccess }: AddModalProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
   const [formData, setFormData] = useState({
     role: "",
@@ -35,14 +32,21 @@ export default function AddModal({ onSuccess }: AddModalProps) {
       toastr.error("Role wajib diisi");
       return;
     }
+    const selectedPermissions = Object.keys(checkedItems).filter(
+      (id) => checkedItems[id] === true
+    )
     try {
-      await addRole(formData);
+      await addRole({
+        ...formData,
+        permission: JSON.stringify(selectedPermissions) // atau array
+      })
       toastr.success("Berhasil simpan access");
       setDialogOpen(false);
       setFormData({
         role: "",
         permission: ""
       });
+      setCheckedItems({});
       onSuccess();
     } catch (error) {
       console.log("Gagal menyimpan ", error);
@@ -55,7 +59,14 @@ export default function AddModal({ onSuccess }: AddModalProps) {
       role: "",
       permission: ""
     })
+    setCheckedItems({});
   }
+
+  const options = [
+    { id: 1, label: "Enable notifications" },
+    { id: 2, label: "Email updates" },
+    { id: 3, label: "Automatic backup" },
+  ]
   return (
     <div>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -81,36 +92,39 @@ export default function AddModal({ onSuccess }: AddModalProps) {
               </div>
               {/* Permission */}
               <div className="grid gap-3">
-                {/* <Label htmlFor="permission">Permission <span className="text-red-500">*</span></Label> */}
-                {/* <Input id="permission" name="permission" onChange={e => setFormData({ ...formData, permission: e.target.value })} placeholder="Permission" /> */}
-                <Collapsible
-                  open={isOpen}
-                  onOpenChange={setIsOpen}
-                  className="flex w-[350px] flex-col gap-2"
-                >
-                  <div className="flex items-center justify-between gap-4 px-4">
-                    <h4 className="text-sm font-semibold">
-                      @peduarte starred 3 repositories
-                    </h4>
-                    <CollapsibleTrigger asChild>
-                      <Button variant="ghost" size="icon" className="size-8">
-                        <ChevronsUpDown />
-                        <span className="sr-only">Toggle</span>
-                      </Button>
-                    </CollapsibleTrigger>
-                  </div>
-                  <div className="rounded-md border px-4 py-2 font-mono text-sm">
-                    @radix-ui/primitives
-                  </div>
-                  <CollapsibleContent className="flex flex-col gap-2">
-                    <div className="rounded-md border px-4 py-2 font-mono text-sm">
-                      @radix-ui/colors
+                {/* <Label htmlFor="permission">Permission <span className="text-red-500">*</span></Label>
+                <Input id="permission" name="permission" onChange={e => setFormData({ ...formData, permission: e.target.value })} placeholder="Permission" /> */}
+                {options.map((item) => (
+                  <Label
+                    key={item.id}
+                    htmlFor={item.id}
+                    className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3
+                               has-[[aria-checked=true]]:border-blue-600
+                               has-[[aria-checked=true]]:bg-blue-50"
+                  >
+                    <motion.div
+                      animate={{
+                        scale: checkedItems[item.id] ? 1.1 : 1,
+                      }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      <Checkbox
+                        id={item.id}
+                        checked={checkedItems[item.id] || false}
+                        onCheckedChange={(value) =>
+                          setCheckedItems((prev) => ({ ...prev, [item.id]: value === true }))
+                        }
+                        className="data-[state=checked]:border-blue-600
+                                   data-[state=checked]:bg-blue-600
+                                   data-[state=checked]:text-white"
+                      />
+                    </motion.div>
+              
+                    <div className="grid gap-1.5 font-normal">
+                      <p className="text-sm leading-none font-medium">{item.label}</p>
                     </div>
-                    <div className="rounded-md border px-4 py-2 font-mono text-sm">
-                      @stitches/react
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
+                  </Label>
+                ))}
               </div>
             </div>
             <div className="mt-4">
