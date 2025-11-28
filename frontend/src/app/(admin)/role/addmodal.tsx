@@ -8,7 +8,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-import { addPermission } from "../actions";
+import { addRole } from "../actions";
 
 interface AddModalProps {
   onSuccess: () => void
@@ -18,24 +18,24 @@ export default function AddModal({ onSuccess }: AddModalProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: "",
-    description: ""
+    role: "",
+    permission: ""
   })
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!formData.name.trim()) {
-      toastr.error("Nama access wajib diisi");
+    if (!formData.role.trim()) {
+      toastr.error("Role wajib diisi");
       return;
     }
     try {
-      await addPermission(formData);
+      await addRole(formData);
       toastr.success("Berhasil simpan access");
       setDialogOpen(false);
       setFormData({
-        name: "",
-        description: ""
+        role: "",
+        permission: ""
       });
       onSuccess();
     } catch (error) {
@@ -46,8 +46,8 @@ export default function AddModal({ onSuccess }: AddModalProps) {
 
   const cancel = async () => {
     setFormData({
-      name: "",
-      description: ""
+      role: "",
+      permission: ""
     })
   }
   return (
@@ -68,15 +68,15 @@ export default function AddModal({ onSuccess }: AddModalProps) {
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4">
-              {/* Nama */}
+              {/* Role */}
               <div className="grid gap-3">
-                <Label htmlFor="name">Nama Access <span className="text-red-500">*</span></Label>
-                <Input id="name" name="name" onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Nama" />
+                <Label htmlFor="role">Nama Role <span className="text-red-500">*</span></Label>
+                <Input id="role" name="role" onChange={e => setFormData({ ...formData, role: e.target.value })} placeholder="Role" />
               </div>
-              {/* Deskripsi */}
+              {/* Permission */}
               <div className="grid gap-3">
-                <Label htmlFor="description">Deskripsi <span className="text-red-500">*</span></Label>
-                <Input id="description" name="description" onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="Deskripsi" />
+                <Label htmlFor="permission">Permission <span className="text-red-500">*</span></Label>
+                <Input id="permission" name="permission" onChange={e => setFormData({ ...formData, permission: e.target.value })} placeholder="Permission" />
               </div>
             </div>
             <div className="mt-4">
