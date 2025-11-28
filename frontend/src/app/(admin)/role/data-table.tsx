@@ -34,13 +34,13 @@ import {
 import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getColumns, Permission } from "./columns"
+import { getColumns, Role } from "./columns"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { getPermission } from "../actions"
+import { getRole } from "../actions"
 import EditModal from "./editmodal"
 
 type Props = {
-  data: Permission[]
+  data: Role[]
   count: number
   pageSize: number | 10
   pageIndex: number | 0
@@ -70,8 +70,8 @@ export function DataTable({
   const [selectedData, setSelectedData] = React.useState<Permission>();
 
   React.useEffect(() => {
-    const fetchProduk = async () => {
-      const res = await getPermission({
+    const fetchRole = async () => {
+      const res = await getRole({
         id: selectedIdToDelete ?? undefined
       })
 
@@ -117,7 +117,7 @@ export function DataTable({
         <AlertDialog open={true} onOpenChange={() => setSelectedIdToDelete(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Apakah kamu yakin menghapus {selectedData?.name}?</AlertDialogTitle>
+              <AlertDialogTitle>Apakah kamu yakin menghapus {selectedData?.role}?</AlertDialogTitle>
               <AlertDialogDescription>
                 Tindakan ini akan menghapus data pengeluaran secara permanen.
               </AlertDialogDescription>
@@ -150,10 +150,10 @@ export function DataTable({
 
       <div className="-mx-4 rounded-xl bg-orange-500 px-4 py-4 flex items-center">
         <Input
-          placeholder="Cari nama..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          placeholder="Cari role..."
+          value={(table.getColumn("role")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("role")?.setFilterValue(event.target.value)
           }
           className="max-w-sm bg-white text-black placeholder:text-black"
         />
