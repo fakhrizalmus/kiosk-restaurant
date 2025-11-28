@@ -2,7 +2,23 @@ const {Role} = require('../models')
 
 const getAll = async (req, res) => {
     try {
-        const getAll = await Role.findAndCountAll();
+        let {page, row, id} = req.query
+    
+        const where = {}
+    
+        if (id) {
+            where.id = id
+        }
+    
+        const options = {
+            where,
+            order: [
+                ['description', 'DESC']
+            ]
+        }
+        if (page) options.offset = parseInt(page);
+        if (row) options.limit = parseInt(row) || 10;
+        const getAll = await Role.findAndCountAll(options);
         return res.status(200).json({
             data: getAll
         })
