@@ -308,3 +308,51 @@ export async function deletePermission(id: number) {
         throw error
     }
 }
+
+//role
+export async function getRole(params: {
+    id?: number
+    page?: number
+    row?: number
+}) {
+    const res = await api.get("/role", {
+        params: params || {}
+    })
+    return res.data
+}
+
+export async function addRole(data: {
+    role: string,
+    permission: string
+}) {
+    try {
+        const res = await api.post("/role", data)
+        return res.data
+    } catch (error) {
+        console.error("Gagal menyimpan role", error)
+        throw error
+    }
+}
+
+export async function updateRole(data: {
+    role: string,
+    permission: string
+}, id: number) {
+    try {
+        const res = await api.put(`/role/${id}`, data)
+        return res.data
+    } catch (error) {
+        console.error("Gagal update role", error)
+        throw error
+    }
+}
+
+export async function deleteRole(id: number) {
+    try {
+        const res = await api.delete(`/role/${id}`)
+        return res.data
+    } catch (error) {
+        console.error("Gagal delete role", error)
+        throw error
+    }
+}
