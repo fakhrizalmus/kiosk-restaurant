@@ -14,16 +14,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
 
-export type Permission = {
+export type Role = {
   id: number
-  name: string,
-  description: string
+  role: string,
+  permission: string
 }
 
 export function getColumns(
   setSelectedIdToDelete: (id: number) => void,
   setSelectedIdToEdit: (id: number) => void
-): ColumnDef<Permission>[] {
+): ColumnDef<Role>[] {
   return [
     {
       id: "no",
@@ -55,17 +55,10 @@ export function getColumns(
       enableHiding: false,
     },
     {
-      accessorKey: "name",
+      accessorKey: "role",
       header: "Nama",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
-      ),
-    },
-    {
-      accessorKey: "description",
-      header: "Deskripsi",
-      cell: ({ row }) => (
-        <div>{row.getValue("description")}</div>
+        <div className="capitalize">{row.getValue("role")}</div>
       ),
     },
     {
