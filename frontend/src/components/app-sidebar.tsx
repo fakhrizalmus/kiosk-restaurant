@@ -57,9 +57,22 @@ const items = [
   }
 ]
 
+const filterMenu = (menu: any[], permissions: number[]) => {
+  return menu
+    .filter(item => permissions.includes(item.id) || !item.id) // parent tanpa id tetap tampil
+    .map(item => ({
+      ...item,
+      menu: item.menu
+        ? item.menu.filter(sub => permissions.includes(sub.id))
+        : undefined
+    }))
+}
+
 export function AppSidebar() {
   const pathname = usePathname()
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({})
+  const userAccess = [1, 3] // nanti ini dari backend
+  const filteredItems = filterMenu(items, userAccess)
 
   const toggleMenu = (title: string) => {
     setOpenMenus(prev => ({ ...prev, [title]: !prev[title] }))
@@ -71,7 +84,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => {
+              {filteredItems.map((item) => {
                 const isActive = pathname === item.url
                 const hasChildren = Array.isArray(item.menu)
                 const isOpen = openMenus[item.title] || false
