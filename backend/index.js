@@ -1,5 +1,7 @@
 require('dotenv').config();
 const express = require('express')
+const session = require("express-session")
+const cookieParser = require("cookie-parser")
 const app = express()
 const cors = require('cors')
 const PORT = process.env.PORT
@@ -18,6 +20,19 @@ const path = require('path');
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
+
+app.use(
+  session({
+    secret: "SECRET_SESSION_KEY",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 1 hari
+    }
+  })
+)
 
 app.use((req, res, next) => {
   req.io = io;

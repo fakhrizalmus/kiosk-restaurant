@@ -1,4 +1,6 @@
 'use strict';
+const bcrypt = require('bcrypt')
+const salt = bcrypt.genSaltSync(10);
 const {
   Model
 } = require('sequelize');
@@ -13,9 +15,9 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.Transaction, {
         foreignKey: 'user_id'
       })
-      this.hasOne(models.Role, {
-        foreignKey: 'role_id'
-      })
+      // this.hasOne(models.Role, {
+      //   foreignKey: 'role_id'
+      // })
     }
   }
   User.init({
@@ -26,7 +28,13 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'User',
-    paranoid: true
+    paranoid: true,
+    hooks: {
+      beforeCreate: (user, options) => {
+        user.password = bcrypt.hashSync(user.password, salt);
+        return user
+      }
+    }
   });
   return User;
 };

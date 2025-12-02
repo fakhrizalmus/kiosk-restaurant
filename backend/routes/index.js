@@ -8,17 +8,17 @@ const transaction = require("./transaction")
 const pesanan = require("./pesanan");
 const role = require("./role");
 const permission = require("./permission");
-// const user = require("./user")
-// const restrict = require("../misc/passport");
+const user = require("./auth")
+const auth = require("../misc/middleware");
 
-router.use("/product", product);
-router.use("/category", category);
-router.use("/cart", cart);
-router.use("/cart-item", cartitem);
-router.use("/transaction", transaction)
-router.use("/pesanan", pesanan);
-router.use("/role", role);
-router.use("/permission", permission);
-// router.use("/auth", user)
+router.use("/product", auth, product);
+router.use("/category", auth, category);
+router.use("/cart", auth, cart);
+router.use("/cart-item", auth, cartitem);
+router.use("/transaction", auth, transaction)
+router.use("/pesanan", auth, pesanan);
+router.use("/role", auth, role);
+router.use("/permission", auth, permission);
+router.use("/auth", user);
 
 module.exports = router
