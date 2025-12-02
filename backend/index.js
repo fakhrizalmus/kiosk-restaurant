@@ -17,7 +17,10 @@ const io = new Server(server, {
 });
 const path = require('path');
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000", // asal frontend
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
