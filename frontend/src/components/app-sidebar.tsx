@@ -3,11 +3,9 @@
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -15,40 +13,47 @@ import {
 import clsx from "clsx"
 import { Calendar, ChevronDown, ChevronRight, Hamburger, Home, Inbox, Key, Settings, User } from "lucide-react"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 const items = [
   {
+    id: 1,
     title: "Transaction",
     url: "/transaction",
     icon: Home,
   },
   {
+    id: 2,
     title: "Pesanan",
     url: "/pesanan",
     icon: Hamburger,
   },
   {
+    id: 3,
     title: "Product",
     url: "/product",
     icon: Inbox,
   },
   {
+    id: 4,
     title: "Category",
     url: "/category",
     icon: Calendar,
   },
   {
+    id: 5,
     title: 'Manage User Access',
     url: '#',
     icon: Settings,
     menu: [
       {
+        id: 6,
         title: "Access",
         url: "/access",
         icon: Key,
       },
       {
+        id: 7,
         title: "Role",
         url: "/role",
         icon: User,
@@ -63,7 +68,7 @@ const filterMenu = (menu: any[], permissions: number[]) => {
     .map(item => ({
       ...item,
       menu: item.menu
-        ? item.menu.filter(sub => permissions.includes(sub.id))
+        ? item.menu.filter((sub: any) => permissions.includes(sub.id))
         : undefined
     }))
 }
@@ -71,8 +76,12 @@ const filterMenu = (menu: any[], permissions: number[]) => {
 export function AppSidebar() {
   const pathname = usePathname()
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({})
-  const userAccess = [1, 3] // nanti ini dari backend
-  const filteredItems = filterMenu(items, userAccess)
+  const userAccess = [1, 2, 3, 4, 5, 6, 7] // nanti ini dari backend
+  const [filteredItems, setFilteredItems] = useState(items)
+
+  useEffect(() => {
+    setFilteredItems(filterMenu(items, userAccess))
+  }, [])
 
   const toggleMenu = (title: string) => {
     setOpenMenus(prev => ({ ...prev, [title]: !prev[title] }))
@@ -90,62 +99,63 @@ export function AppSidebar() {
                 const isOpen = openMenus[item.title] || false
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild={!hasChildren}
-                      onClick={
-                        hasChildren
-                          ? () => toggleMenu(item.title)
-                          : undefined
-                      }
-                      className={clsx(
-                        "rounded-md",
-                        isActive && !hasChildren && "bg-[var(--primary)] text-white"
-                      )}
-                    >
-                      {hasChildren ? (
-                        <div className="w-full flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <item.icon />
-                            <span>{item.title}</span>
-                          </div>
-                          {isOpen ? (
-                            <ChevronDown size={16} />
-                          ) : (
-                            <ChevronRight size={16} />
-                          )}
-                        </div>
-                      ) : (
+                    {/* ITEM TANPA CHILD */}
+                    {!hasChildren && (
+                      <SidebarMenuButton
+                        asChild
+                        className={clsx(
+                          "rounded-md",
+                          isActive && "bg-[var(--primary)] text-white"
+                        )}
+                      >
                         <a href={item.url} className="flex items-center gap-2">
                           <item.icon />
                           <span>{item.title}</span>
                         </a>
-                      )}
-                    </SidebarMenuButton>
-                    {hasChildren && isOpen && (
-                      <div className="mt-1 ml-6 flex flex-col gap-1">
-                        {item.menu?.map((sub) => {
-                          const isSubActive = pathname === sub.url
+                      </SidebarMenuButton>
+                    )}
 
-                          return (
-                            <SidebarMenuButton
-                              key={sub.title}
-                              asChild
-                              className={clsx(
-                                "rounded-md",
-                                isSubActive && "bg-[var(--primary)] text-white"
-                              )}
-                            >
-                              <a
-                                href={sub.url}
-                                className="flex items-center gap-2 px-2 py-1"
-                              >
-                                <sub.icon />
-                                <span>{sub.title}</span>
-                              </a>
-                            </SidebarMenuButton>
-                          )
-                        })}
-                      </div>
+                    {/* ITEM DENGAN CHILD */}
+                    {hasChildren && (
+                      <>
+                        <SidebarMenuButton
+                          onClick={() => toggleMenu(item.title)}
+                          className="rounded-md flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2">
+                            <item.icon />
+                            <span>{item.title}</span>
+                          </div>
+
+                          {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </SidebarMenuButton>
+
+                        {isOpen && (
+                          <div className="mt-1 ml-6 flex flex-col gap-1">
+                            {item.menu?.map((sub: any) => {
+                              const isSubActive = pathname === sub.url
+                              return (
+                                <SidebarMenuButton
+                                  key={sub.title}
+                                  asChild
+                                  className={clsx(
+                                    "rounded-md",
+                                    isSubActive && "bg-[var(--primary)] text-white"
+                                  )}
+                                >
+                                  <a
+                                    href={sub.url}
+                                    className="flex items-center gap-2 px-2 py-1"
+                                  >
+                                    <sub.icon />
+                                    <span>{sub.title}</span>
+                                  </a>
+                                </SidebarMenuButton>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </>
                     )}
                   </SidebarMenuItem>
                 )

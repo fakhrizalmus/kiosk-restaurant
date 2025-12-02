@@ -36,8 +36,8 @@ export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
         try {
           const role = await getRole({ id: id });
           setFormData({
-            role: permission.data.rows[0].role,
-            permission: permission.data.rows[0].permission
+            role: role.data.rows[0].role,
+            permission: role.data.rows[0].permission
           });
         } catch (error) {
           console.error("Gagal ambil data kategori:", error);

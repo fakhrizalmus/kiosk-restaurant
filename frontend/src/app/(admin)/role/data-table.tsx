@@ -67,7 +67,7 @@ export function DataTable({
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const columns = React.useMemo(() => getColumns(setSelectedIdToDelete, setSelectedIdToEdit), [])
-  const [selectedData, setSelectedData] = React.useState<Permission>();
+  const [selectedData, setSelectedData] = React.useState<Role>();
 
   React.useEffect(() => {
     const fetchRole = async () => {
@@ -78,7 +78,7 @@ export function DataTable({
       setSelectedData(res.data.rows[0])
     }
 
-    fetchProduk();
+    fetchRole();
   }, [selectedIdToDelete]);
 
   const table = useReactTable({

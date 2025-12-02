@@ -13,7 +13,7 @@ const getAll = async (req, res) => {
         const options = {
             where,
             order: [
-                ['description', 'DESC']
+                ['role', 'DESC']
             ]
         }
         if (page) options.offset = parseInt(page);

@@ -5,10 +5,10 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { IconPlus } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-import { addRole } from "../actions";
+import { addRole, getPermission } from "../actions";
 import { motion, AnimatePresence } from "framer-motion"
 import { Checkbox } from "@/components/ui/checkbox"
 
@@ -19,11 +19,21 @@ interface AddModalProps {
 export default function AddModal({ onSuccess }: AddModalProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [permissions, setPermissions] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
     role: "",
     permission: ""
   })
+
+  const fetchPermission = async () => {
+    const res = await getPermission({});
+    setPermissions(res.data.rows);
+  }
+
+  useEffect(() => {
+    fetchPermission();
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -61,18 +71,12 @@ export default function AddModal({ onSuccess }: AddModalProps) {
     })
     setCheckedItems({});
   }
-
-  const options = [
-    { id: 1, label: "Enable notifications" },
-    { id: 2, label: "Email updates" },
-    { id: 3, label: "Automatic backup" },
-  ]
   return (
     <div>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button className="mt-3 bg-green-400 w-fit" onClick={() => setDialogOpen(true)}>
-            <IconPlus />Tambah Access
+            <IconPlus />Tambah Role
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[825px]">
@@ -92,21 +96,17 @@ export default function AddModal({ onSuccess }: AddModalProps) {
               </div>
               {/* Permission */}
               <div className="grid gap-3">
-                {/* <Label htmlFor="permission">Permission <span className="text-red-500">*</span></Label>
-                <Input id="permission" name="permission" onChange={e => setFormData({ ...formData, permission: e.target.value })} placeholder="Permission" /> */}
-                {options.map((item) => (
+                {permissions.map((item) => (
                   <Label
                     key={item.id}
                     htmlFor={item.id}
-                    className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3
-                               has-[[aria-checked=true]]:border-blue-600
-                               has-[[aria-checked=true]]:bg-blue-50"
+                    className="flex items-start gap-3 rounded-lg"
                   >
                     <motion.div
                       animate={{
                         scale: checkedItems[item.id] ? 1.1 : 1,
                       }}
-                      transition={{ duration: 0.15 }}
+                      transition={{ duration: 0.5 }}
                     >
                       <Checkbox
                         id={item.id}
@@ -114,14 +114,10 @@ export default function AddModal({ onSuccess }: AddModalProps) {
                         onCheckedChange={(value) =>
                           setCheckedItems((prev) => ({ ...prev, [item.id]: value === true }))
                         }
-                        className="data-[state=checked]:border-blue-600
-                                   data-[state=checked]:bg-blue-600
-                                   data-[state=checked]:text-white"
                       />
                     </motion.div>
-              
                     <div className="grid gap-1.5 font-normal">
-                      <p className="text-sm leading-none font-medium">{item.label}</p>
+                      <p className="text-sm leading-none font-medium">{item.name}</p>
                     </div>
                   </Label>
                 ))}
