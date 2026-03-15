@@ -30,6 +30,14 @@ export default function AddModal({ onSuccess }: AddModalProps) {
       return;
     }
     try {
+      if (formData.name == "") {
+        toastr.error('Nama wajib diisi!');
+        return;
+      }
+      if (formData.description == "") {
+        toastr.error('Description wajib diisi!');
+        return;
+      }
       await addPermission(formData);
       toastr.success("Berhasil simpan access");
       setDialogOpen(false);

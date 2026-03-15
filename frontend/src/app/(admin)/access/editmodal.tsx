@@ -60,7 +60,7 @@ export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
       return;
     }
 
-    if (!formData.name.trim()) {
+    if (!formData.description.trim()) {
       toastr.error("Deskripsi wajib diisi");
       return;
     }
