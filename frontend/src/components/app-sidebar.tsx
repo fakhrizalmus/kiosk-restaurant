@@ -14,6 +14,7 @@ import clsx from "clsx"
 import { Calendar, ChevronDown, ChevronRight, Hamburger, Home, Inbox, Key, Settings, User } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
+import { getInfoLogin, getRoles } from "./actions"
 
 const items = [
   {
@@ -76,11 +77,21 @@ const filterMenu = (menu: any[], permissions: number[]) => {
 export function AppSidebar() {
   const pathname = usePathname()
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({})
-  const userAccess = [1, 2, 3, 4, 5, 6, 7] // nanti ini dari backend
+  const [userAccess, setUserAccess] = useState<[]>([]);
+  const [infoLogin, setInfoLogin] = useState<{}>({});
   const [filteredItems, setFilteredItems] = useState(items)
 
+  const fetchInfoLogin = async () => {
+    const res = await getInfoLogin();
+    const res2 = await getRoles({ id: res.data.role_id });
+    const array = JSON.parse(res2.permission);
+    setInfoLogin(res.data);
+    setUserAccess(array);
+    setFilteredItems(filterMenu(items, array))
+  }
+
   useEffect(() => {
-    setFilteredItems(filterMenu(items, userAccess))
+    fetchInfoLogin();
   }, [])
 
   const toggleMenu = (title: string) => {
