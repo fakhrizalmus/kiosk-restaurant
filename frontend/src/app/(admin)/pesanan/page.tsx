@@ -24,6 +24,8 @@ export default function PesananPage() {
   const [notifItems, setNotifItems] = useState<
     { id: number; product: string; qty: number; table: number }[]
   >([]);
+  const [pageSize, setPageSize] = useState<number>(10)
+  const [pageIndex, setPageIndex] = useState<number>(0)
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [noTable, setNoTable] = useState<number | null>(null);
 
@@ -32,6 +34,8 @@ export default function PesananPage() {
       const res = await getPesanan({
         status: selectedStatus || undefined,
         no_table: noTable !== null ? noTable : undefined,
+        row: pageSize,
+        page: pageIndex * pageSize
       });
 
       const rows = res.data.rows || [];
@@ -139,6 +143,10 @@ export default function PesananPage() {
         setSelectedStatus={setSelectedStatus}
         noTable={noTable}
         setNoTable={setNoTable}
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        setPageIndex={setPageIndex}
+        setPageSize={setPageSize}
       />
     </div>
   );

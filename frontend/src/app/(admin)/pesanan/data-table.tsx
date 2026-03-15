@@ -40,6 +40,10 @@ import { updateCartItem } from "../actions"
 type Props = {
   data: Pesanan[]
   count: number
+  pageSize: number | 10
+  pageIndex: number | 0
+  setPageSize: React.Dispatch<React.SetStateAction<number>>
+  setPageIndex: React.Dispatch<React.SetStateAction<number>>
   selectedStatus: string
   setSelectedStatus: (status: string) => void
   noTable: number | null
@@ -49,6 +53,10 @@ type Props = {
 export function DataTable({
   data,
   count,
+  pageIndex,
+  pageSize,
+  setPageIndex,
+  setPageSize,
   selectedStatus,
   setSelectedStatus,
   noTable,
@@ -82,7 +90,14 @@ export function DataTable({
       columnFilters,
       columnVisibility,
       rowSelection,
-    }
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function' ? updater({ pageIndex, pageSize }) : updater
+      setPageIndex(next.pageIndex)
+      setPageSize(next.pageSize)
+    },
+    manualPagination: true,
+    pageCount: Math.ceil(count / (pageSize || 10)),
   })
 
   return (
