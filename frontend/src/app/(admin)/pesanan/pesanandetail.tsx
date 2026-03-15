@@ -1,11 +1,11 @@
 "use client";
 
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -14,97 +14,97 @@ import { useEffect, useState } from "react";
 import { getPesananDetail } from "../actions";
 
 type Product = {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
 };
 
 type CartItem = {
-    id: number;
-    qty: number;
-    status: "waiting" | "preparing" | "served";
-    Product: Product;
+  id: number;
+  qty: number;
+  status: "waiting" | "preparing" | "served";
+  Product: Product;
 };
 
 type Pesanan = {
-    id: number;
-    no_table: string;
-    createdAt: string;
-    status: string;
-    CartItems: CartItem[];
+  id: number;
+  no_table: string;
+  createdAt: string;
+  status: string;
+  CartItems: CartItem[];
 };
 
 type Props = {
-    id: number;
-    onStatusChange?: (cartItemId: number, newStatus: CartItem["status"]) => Promise<void>;
+  id: number;
+  onStatusChange?: (cartItemId: number, newStatus: CartItem["status"]) => Promise<void>;
 };
 
 export function PesananDetailDialog({ id, onStatusChange }: Props) {
-    const [pesanan, setPesanan] = useState<Pesanan | null>(null);
-    const [isOpen, setIsOpen] = useState(false);
+  const [pesanan, setPesanan] = useState<Pesanan | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-    const refetch = async () => {
-        const res = await getPesananDetail(id);
-        setPesanan(res.data.rows[0]);
-    };
+  const refetch = async () => {
+    const res = await getPesananDetail(id);
+    setPesanan(res.data.rows[0]);
+  };
 
-    useEffect(() => {
-        if (isOpen) {
-            refetch();
-        }
-    }, [id, isOpen]);
+  useEffect(() => {
+    if (isOpen) {
+      refetch();
+    }
+  }, [id, isOpen]);
 
-    return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button
-                    onClick={() => console.log("Trigger clicked")}
-                    variant="ghost"
-                    className="h-8 w-fit p-2"
-                    style={{ backgroundColor: "var(--primary)" }}
-                >
-                    Detail
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>Pesanan Meja {pesanan?.no_table ?? '-'}</DialogTitle>
-                </DialogHeader>
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button
+          onClick={() => console.log("Trigger clicked")}
+          variant="ghost"
+          className="h-8 w-fit p-2"
+          style={{ backgroundColor: "var(--primary)" }}
+        >
+          Detail
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Pesanan Meja {pesanan?.no_table ?? '-'}</DialogTitle>
+        </DialogHeader>
 
-                <div className="space-y-4">
-                    {pesanan?.CartItems.map((item) => (
-                        <div key={item.id} className="border-b pb-3">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <p className="font-medium">{item.Product.name}</p>
-                                    <p className="text-sm text-muted-foreground">Qty: {item.qty}</p>
-                                </div>
-                                <div className="w-40">
-                                    <Label className="text-xs mb-1">Status</Label>
-                                    <Select
-                                        value={item.status}
-                                        onValueChange={(value) => {
-                                            onStatusChange?.(item.id, value as CartItem["status"])
-                                                ?.then(refetch)
-                                                .catch((err) => {
-                                                    console.error("Update status gagal", err);
-                                                });
-                                        }}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="waiting">Waiting</SelectItem>
-                                            <SelectItem value="preparing">Preparing</SelectItem>
-                                            <SelectItem value="served">Served</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+        <div className="space-y-4">
+          {pesanan?.CartItems.map((item) => (
+            <div key={item.id} className="border-b pb-3">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-medium">{item.Product.name}</p>
+                  <p className="text-sm text-muted-foreground">Qty: {item.qty}</p>
                 </div>
-            </DialogContent>
-        </Dialog>
-    );
+                <div className="w-40">
+                  <Label className="text-xs mb-1">Status</Label>
+                  <Select
+                    value={item.status}
+                    onValueChange={(value) => {
+                      onStatusChange?.(item.id, value as CartItem["status"])
+                        ?.then(refetch)
+                        .catch((err) => {
+                          console.error("Update status gagal", err);
+                        });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="waiting">Waiting</SelectItem>
+                      <SelectItem value="preparing">Preparing</SelectItem>
+                      <SelectItem value="served">Served</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
