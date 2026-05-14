@@ -198,6 +198,8 @@ export default function KioskPage() {
     preparing: "Preparing",
     served: "Served",
   };
+  const orderTotal = orderItems.reduce((total, item) => total + item.price * item.qty, 0);
+  const isCheckoutDisabled = orderItems.length === 0 || orderTotal <= 0;
 
   return (
     <div className="grid grid-cols-3 h-screen">
@@ -348,12 +350,12 @@ export default function KioskPage() {
                 style: "currency",
                 currency: "IDR",
                 minimumFractionDigits: 0,
-              }).format(orderItems.reduce((total, item) => total + item.price * item.qty, 0))}
+              }).format(orderTotal)}
             </span>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <Button variant="destructive" onClick={cancel}>Cancel</Button>
-            <Button onClick={checkout}>Checkout</Button>
+            <Button onClick={checkout} disabled={isCheckoutDisabled}>Checkout</Button>
           </div>
         </div>
       </div>
