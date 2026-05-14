@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getSocket } from "@/lib/socket";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
@@ -24,41 +24,35 @@ export default function PesananPage() {
   const [notifItems, setNotifItems] = useState<
     { id: number; product: string; qty: number; table: number }[]
   >([]);
-  const [pageSize, setPageSize] = useState<number>(10)
-  const [pageIndex, setPageIndex] = useState<number>(0)
-  const [selectedStatus, setSelectedStatus] = useState<string>('ongoing');
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageIndex, setPageIndex] = useState<number>(0);
+  const [selectedStatus, setSelectedStatus] = useState<string>("ongoing");
   const [noTable, setNoTable] = useState<number | null>(null);
 
-  const fetchPesanan = async () => {
+  const fetchPesanan = useCallback(async () => {
     try {
       const res = await getPesanan({
         status: selectedStatus || undefined,
         no_table: noTable !== null ? noTable : undefined,
         row: pageSize,
-        page: pageIndex * pageSize
+        page: pageIndex * pageSize,
       });
 
-      const rows = res.data.rows || [];
-
-      setData(res.data.rows);
-      setCountPesanan(res.data.count);
+      setData(res.data.rows || []);
+      setCountPesanan(res.data.count || 0);
     } catch (error) {
       console.error("Gagal fetch pesanan:", error);
     }
-  }
+  }, [selectedStatus, noTable, pageSize, pageIndex]);
 
   useEffect(() => {
     const socket = getSocket();
 
     const handleNewOrder = async (newOrder: any) => {
-      // Tampilkan notifikasi
       toastr.success(`Pesanan baru dari meja ${newOrder.table}`);
-
-      // Ambil ulang data pesanan terbaru
       await fetchPesanan();
 
-      // Update state notifikasi
-      const notifData = newOrder.items.map((item: any) => ({
+      const notifData = (newOrder.items || []).map((item: any) => ({
         id: newOrder.cart_id,
         product: item.Product?.name ?? `ID ${item.product_id}`,
         qty: item.qty,
@@ -69,21 +63,22 @@ export default function PesananPage() {
       setNotifCount((prev) => prev + notifData.length);
     };
 
-    socket.on("connect", () => {
-      console.log("✅ Socket connected to dapur");
-    });
+    const handleConnect = () => {
+      console.log("Socket connected to dapur");
+    };
 
+    socket.on("connect", handleConnect);
     socket.on("new_order", handleNewOrder);
 
     return () => {
-      socket.off("connect");
+      socket.off("connect", handleConnect);
       socket.off("new_order", handleNewOrder);
     };
-  }, []);
+  }, [fetchPesanan]);
 
   useEffect(() => {
     fetchPesanan();
-  }, [selectedStatus, noTable]);
+  }, [fetchPesanan]);
 
   const handleMarkAsRead = () => {
     setNotifItems([]);

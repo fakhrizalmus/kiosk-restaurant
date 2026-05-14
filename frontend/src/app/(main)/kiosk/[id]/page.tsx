@@ -74,21 +74,28 @@ export default function KioskPage() {
   }, [kioskId]);
 
   useEffect(() => {
-    const socket = getSocket();
-    socket.emit("join_table", `table_${kioskId}`); // join room sesuai no meja
+    if (!Number.isInteger(kioskId) || kioskId <= 0) return;
 
-    socket.on("cart_item_updated", (updatedItem) => {
+    const socket = getSocket();
+    const tableRoom = `table_${kioskId}`;
+
+    socket.emit("join_table", tableRoom);
+
+    const handleCartItemUpdated = (updatedItem: any) => {
       setCartItem((prev) =>
         prev.map((item) =>
           item.id === updatedItem.id
             ? { ...item, status: updatedItem.status }
-            : item
+          : item
         )
       );
-    });
+    };
+
+    socket.on("cart_item_updated", handleCartItemUpdated);
 
     return () => {
-      socket.off("cart_item_updated");
+      socket.emit("leave_table", tableRoom);
+      socket.off("cart_item_updated", handleCartItemUpdated);
     };
   }, [kioskId]);
 

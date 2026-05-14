@@ -1,38 +1,39 @@
 require('dotenv').config();
-const express = require('express')
-const session = require("express-session")
-const cookieParser = require("cookie-parser")
-const app = express()
-const cors = require('cors')
-const PORT = process.env.PORT
-const router = require("./routes/index")
+
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+const express = require('express');
+const session = require('express-session');
 const http = require('http');
-const { Server } = require('socket.io');
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"]
-  }
-});
 const path = require('path');
+const { Server } = require('socket.io');
+const router = require('./routes/index');
+const { getSocketCorsOptions, registerSocketHandlers } = require('./socket');
+
+const app = express();
+const server = http.createServer(app);
+const PORT = process.env.PORT || 4000;
+const isProduction = process.env.NODE_ENV === 'production';
+const sessionSecret = process.env.SESSION_SECRET || 'SECRET_SESSION_KEY';
+const sameSite = isProduction ? 'none' : false;
+
+const io = new Server(server, {
+  cors: getSocketCorsOptions(),
+  pingTimeout: 20000,
+  pingInterval: 25000,
+});
+
+if (isProduction) {
+  app.set('trust proxy', 1);
+}
 
 app.use(cors({
-  origin: "http://localhost:3000", // asal frontend
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser())
-
-const isProduction = process.env.NODE_ENV === 'production'
-const sessionSecret = process.env.SESSION_SECRET || 'SECRET_SESSION_KEY'
-const sameSite = isProduction ? 'none' : false
-
-if (isProduction) {
-  app.set('trust proxy', 1)
-}
-
+app.use(cookieParser());
 app.use(
   session({
     secret: sessionSecret,
@@ -43,43 +44,24 @@ app.use(
       httpOnly: true,
       secure: isProduction,
       sameSite,
-      maxAge: 24 * 60 * 60 * 1000 // 1 hari
-    }
+      maxAge: 24 * 60 * 60 * 1000,
+    },
   })
-)
+);
 
 app.use((req, res, next) => {
   req.io = io;
   next();
 });
 
-app.use('/api', router)
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')))
+app.use('/api', router);
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-app.get("/", (req, res) => {
-  res.send("halo");
-  console.log("test");
+app.get('/', (req, res) => {
+  res.send('halo');
 });
 
-io.on('connection', (socket) => {
-  console.log('🔌 a user connected');
-
-  socket.on("disconnect", () => {
-    console.log("🔌 Client disconnected:", socket.id);
-  });
-
-  socket.on("new_order", (data) => {
-    console.log("🛎️ New Order:", data);
-
-    // Broadcast ke semua client lain (admin/dapur)
-    socket.broadcast.emit("new_order", data);
-  });
-
-  socket.on("join_table", (room) => {
-    socket.join(room);
-    console.log("Pelanggan bergabung ke", room);
-  });
-});
+registerSocketHandlers(io);
 
 server.listen(PORT, () => {
   console.log(`dengar di ${PORT}`);
