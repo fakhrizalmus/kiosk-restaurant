@@ -3,6 +3,7 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -11,10 +12,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import clsx from "clsx"
-import { Calendar, ChevronDown, ChevronRight, Hamburger, Home, Inbox, Key, Settings, User } from "lucide-react"
+import { Calendar, ChevronDown, ChevronRight, Hamburger, Home, Inbox, Key, LogOut, Settings, User } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { getInfoLogin, getRoles } from "./actions"
+import { logout } from "@/app/(auth)/actions"
 
 const items = [
   {
@@ -175,6 +177,19 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={logout}
+              className="rounded-md hover:bg-red-50 hover:text-red-600 w-full"
+            >
+              <LogOut size={20} />
+              <span>Logout</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   )
 }

@@ -9,7 +9,7 @@ type GetCartParams = {
 }
 
 export async function getCart(params: GetCartParams, no_table: number) {
-  const res = await api.get(`/cart/${no_table}`, {
+  const res = await api.get(`/public/cart/${no_table}`, {
     params: params || {},
   })
   return res.data
@@ -19,7 +19,7 @@ export async function addCart(data: {
   no_table: number
 }) {
   try {
-    const res = await api.post("/cart", data)
+    const res = await api.post("/public/cart", data)
     return res.data
   } catch (error) {
     console.error("Gagal menyimpan cart", error)
@@ -32,7 +32,7 @@ export async function updateCart(data: {
   status?: string
 }, id: number) {
   try {
-    const res = await api.put(`/cart/${id}`, data)
+    const res = await api.put(`/public/cart/${id}`, data)
     return res.data
   } catch (error) {
     console.error("Gagal update cart", error)
@@ -42,7 +42,7 @@ export async function updateCart(data: {
 
 export async function deleteCart(id: number) {
   try {
-    const res = await api.delete(`/cart/${id}`)
+    const res = await api.delete(`/public/cart/${id}`)
     return res.data
   } catch (error) {
     throw error
@@ -59,7 +59,7 @@ type GetProductParams = {
 }
 
 export async function getProduct(params: GetProductParams) {
-  const res = await api.get(`/product`, {
+  const res = await api.get(`/public/product`, {
     params: params || {},
   })
   return res.data
@@ -71,7 +71,7 @@ export async function addProduct(data: {
   price: number
 }) {
   try {
-    const res = await api.post("/product", data)
+    const res = await api.post("/public/product", data)
     return res.data
   } catch (error) {
     console.error("Gagal menyimpan product", error)
@@ -85,7 +85,7 @@ export async function updateProduct(data: {
   price?: number
 }, id: number) {
   try {
-    const res = await api.put(`/product/${id}`, data)
+    const res = await api.put(`/public/product/${id}`, data)
     return res.data
   } catch (error) {
     console.error("Gagal update product", error)
@@ -95,7 +95,7 @@ export async function updateProduct(data: {
 
 export async function deleteProduct(id: number) {
   try {
-    const res = await api.delete(`/product/${id}`)
+    const res = await api.delete(`/public/product/${id}`)
     return res.data
   } catch (error) {
     throw error
@@ -114,7 +114,7 @@ type GetCartItemParams = {
 }
 
 export async function getCartItem(params: GetCartItemParams) {
-  const res = await api.get(`/cart-item`, {
+  const res = await api.get(`/public/cart-item`, {
     params: params || {},
   })
   return res.data
@@ -126,7 +126,7 @@ export async function addCartItem(data: {
   qty: number
 }) {
   try {
-    const res = await api.post("/cart-item", data)
+    const res = await api.post("/public/cart-item", data)
     return res.data
   } catch (error) {
     console.error("Gagal menyimpan cart item", error)
@@ -140,7 +140,7 @@ export async function updateCartItem(id: number, data: {
   status?: string
 }) {
   try {
-    const res = await api.put(`/cart-item/${id}`, data)
+    const res = await api.put(`/public/cart-item/${id}`, data)
     return res.data
   } catch (error) {
     console.error("Gagal update cart item", error)
@@ -150,7 +150,7 @@ export async function updateCartItem(id: number, data: {
 
 export async function deleteCartItem(id: number) {
   try {
-    const res = await api.delete(`/cart-item/${id}`)
+    const res = await api.delete(`/public/cart-item/${id}`)
     return res.data
   } catch (error) {
     console.error("Gagal delete cart item", error)
@@ -165,7 +165,7 @@ export async function getCategory(params: {
   page?: number
   row?: number
 }) {
-  const res = await api.get("/category", {
+  const res = await api.get("/public/category", {
     params: params || {}
   })
   return res.data
@@ -175,7 +175,7 @@ export async function addCategory(data: {
   name: string
 }) {
   try {
-    const res = await api.post("/category", data)
+    const res = await api.post("/public/category", data)
     return res.data
   } catch (error) {
     console.error("Gagal menyimpan category", error)
@@ -187,7 +187,7 @@ export async function updateCategory(data: {
   name: string
 }, id: number) {
   try {
-    const res = await api.put(`/category/${id}`, data)
+    const res = await api.put(`/public/category/${id}`, data)
     return res.data
   } catch (error) {
     console.error("Gagal update category", error)
@@ -197,7 +197,7 @@ export async function updateCategory(data: {
 
 export async function deleteCategory(id: number) {
   try {
-    const res = await api.delete(`/category/${id}`)
+    const res = await api.delete(`/public/category/${id}`)
     return res.data
   } catch (error) {
     console.error("Gagal delete category", error)

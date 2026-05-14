@@ -11,6 +11,13 @@ const permission = require("./permission");
 const user = require("./auth")
 const auth = require("../misc/middleware");
 
+// Public routes for kiosk (no auth required)
+router.use("/public/product", product);
+router.use("/public/category", category);
+router.use("/public/cart", cart);
+router.use("/public/cart-item", cartitem);
+
+// Protected routes (require auth)
 router.use("/product", auth, product);
 router.use("/category", auth, category);
 router.use("/cart", auth, cart);

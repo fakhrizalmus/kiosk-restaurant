@@ -25,13 +25,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
+const isProduction = process.env.NODE_ENV === 'production'
+const sessionSecret = process.env.SESSION_SECRET || 'SECRET_SESSION_KEY'
+const sameSite = isProduction ? 'none' : false
+
+if (isProduction) {
+  app.set('trust proxy', 1)
+}
+
 app.use(
   session({
-    secret: "SECRET_SESSION_KEY",
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
+    rolling: true,
     cookie: {
       httpOnly: true,
+      secure: isProduction,
+      sameSite,
       maxAge: 24 * 60 * 60 * 1000 // 1 hari
     }
   })

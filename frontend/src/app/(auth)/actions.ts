@@ -6,7 +6,6 @@ export async function login(data: {
 }) {
   try {
     const res = await api.post('/auth/login', data)
-    localStorage.setItem('token', res.data.Token);
     window.location.href = "/transaction";
     return res.data
   } catch (error) {
@@ -32,7 +31,7 @@ export async function register(data: {
 
 export async function logout() {
   try {
-    localStorage.removeItem('token')
+    await api.post('/auth/logout')
     window.location.href = "/login";
   } catch (error) {
     console.log(error);
@@ -42,7 +41,7 @@ export async function logout() {
 
 export async function infoLogin() {
   try {
-    const res = await api.get("/auth/infologin")
+    const res = await api.get("/auth/me")
     console.log(res);
     return res.data
   } catch (error) {
