@@ -34,13 +34,13 @@ import {
 import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getColumns, Role } from "./columns"
+import { getColumns, Permission } from "./columns"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { getRole } from "../actions"
+import { getPermission } from "@/services/admin-api"
 import EditModal from "./editmodal"
 
 type Props = {
-  data: Role[]
+  data: Permission[]
   count: number
   pageSize: number | 10
   pageIndex: number | 0
@@ -67,18 +67,18 @@ export function DataTable({
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const columns = React.useMemo(() => getColumns(setSelectedIdToDelete, setSelectedIdToEdit), [])
-  const [selectedData, setSelectedData] = React.useState<Role>();
+  const [selectedData, setSelectedData] = React.useState<Permission>();
 
   React.useEffect(() => {
-    const fetchRole = async () => {
-      const res = await getRole({
+    const fetchProduk = async () => {
+      const res = await getPermission({
         id: selectedIdToDelete ?? undefined
       })
 
       setSelectedData(res.data.rows[0])
     }
 
-    fetchRole();
+    fetchProduk();
   }, [selectedIdToDelete]);
 
   const table = useReactTable({
@@ -117,7 +117,7 @@ export function DataTable({
         <AlertDialog open={true} onOpenChange={() => setSelectedIdToDelete(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Apakah kamu yakin menghapus {selectedData?.role}?</AlertDialogTitle>
+              <AlertDialogTitle>Apakah kamu yakin menghapus {selectedData?.name}?</AlertDialogTitle>
               <AlertDialogDescription>
                 Tindakan ini akan menghapus data pengeluaran secara permanen.
               </AlertDialogDescription>
@@ -150,10 +150,10 @@ export function DataTable({
 
       <div className="-mx-4 rounded-xl bg-orange-500 px-4 py-4 flex items-center">
         <Input
-          placeholder="Cari role..."
-          value={(table.getColumn("role")?.getFilterValue() as string) ?? ""}
+          placeholder="Cari nama..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("role")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm bg-white text-black placeholder:text-black"
         />

@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-import { updateCategory, getCategory } from "../actions";
+import { updatePermission, getPermission } from "@/services/admin-api";
 
 interface EditModalProps {
   id: number | null;
@@ -27,21 +27,28 @@ interface EditModalProps {
 export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
   const [formData, setFormData] = useState({
     name: "",
+    description: ""
   });
 
   useEffect(() => {
     if (id !== null) {
       (async () => {
         try {
-          const category = await getCategory({ id: id });
-          setFormData({ name: category.data.rows[0].name });
+          const permission = await getPermission({ id: id });
+          setFormData({
+            name: permission.data.rows[0].name,
+            description: permission.data.rows[0].description
+          });
         } catch (error) {
           console.error("Gagal ambil data kategori:", error);
           toastr.error("Gagal memuat data kategori");
         }
       })();
     } else {
-      setFormData({ name: "" });
+      setFormData({
+        name: "",
+        description: ""
+      });
     }
   }, [id]);
 
@@ -49,15 +56,23 @@ export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      toastr.error("Nama kategori wajib diisi");
+      toastr.error("Nama permission wajib diisi");
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      toastr.error("Deskripsi wajib diisi");
       return;
     }
 
     try {
-      await updateCategory(formData, id!);
-      toastr.success("Berhasil update kategori");
+      await updatePermission(formData, id!);
+      toastr.success("Berhasil update permission");
 
-      setFormData({ name: "" });
+      setFormData({
+        name: "",
+        description: ""
+      });
       onSuccess();
       onClose()
     } catch (error) {
@@ -67,7 +82,10 @@ export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
   }
 
   const cancel = () => {
-    setFormData({ name: "" });
+    setFormData({
+      name: "",
+      description: ""
+    });
     onClose();
   };
 
@@ -75,7 +93,7 @@ export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
     <div>
       <Dialog open={id !== null} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[825px]">
-          <CategoryForm
+          <PermissionForm
             formData={formData}
             setFormData={setFormData}
             handleSubmit={handleSubmit}
@@ -87,29 +105,35 @@ export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
   );
 }
 
-function CategoryForm({
+function PermissionForm({
   formData,
   setFormData,
   handleSubmit,
   cancel,
 }: {
-  formData: { name: string };
-  setFormData: React.Dispatch<React.SetStateAction<{ name: string }>>;
+  formData: {
+    name: string,
+    description: string
+  };
+  setFormData: React.Dispatch<React.SetStateAction<{
+    name: string,
+    description: string
+  }>>;
   handleSubmit: (e: React.FormEvent) => void;
   cancel: () => void;
 }) {
   return (
     <form onSubmit={handleSubmit}>
       <DialogHeader>
-        <DialogTitle>Edit Kategori</DialogTitle>
-        <DialogDescription>Ubah data kategori dan klik simpan untuk memperbarui.
+        <DialogTitle>Edit Access</DialogTitle>
+        <DialogDescription>Ubah data access dan klik simpan untuk memperbarui.
         </DialogDescription>
       </DialogHeader>
 
       <div className="grid gap-4 mt-4">
         <div className="grid gap-3">
           <Label htmlFor="name">
-            Nama Kategori <span className="text-red-500">*</span>
+            Nama Access <span className="text-red-500">*</span>
           </Label>
           <Input
             id="name"
@@ -119,6 +143,20 @@ function CategoryForm({
               setFormData({ ...formData, name: e.target.value })
             }
             placeholder="Nama"
+          />
+        </div>
+        <div className="grid gap-3">
+          <Label htmlFor="description">
+            Deskripsi <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            placeholder="Deskripsi"
           />
         </div>
       </div>

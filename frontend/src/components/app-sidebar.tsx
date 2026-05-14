@@ -15,8 +15,8 @@ import clsx from "clsx"
 import { Calendar, ChevronDown, ChevronRight, Hamburger, Home, Inbox, Key, LogOut, Settings, User } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { getInfoLogin, getRoles } from "./actions"
-import { logout } from "@/app/(auth)/actions"
+import { getInfoLogin, getRoles } from "@/features/navigation/api"
+import { logout } from "@/services/auth-api"
 
 const items = [
   {

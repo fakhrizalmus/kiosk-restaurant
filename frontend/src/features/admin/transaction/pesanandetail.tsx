@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
-import { getPesananDetail, addTransaction } from "../actions";
+import { getPesananDetail, addTransaction } from "@/services/admin-api";
 import { formatToRupiah } from "@/lib/utils";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";

@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { DataTable } from "./data-table"
-import { deleteProduct, getProduct } from "../actions"
+import { DataTable } from "@/features/admin/product/data-table"
+import { deleteProduct, getProduct } from "@/services/admin-api"
 import { CardTitle } from "@/components/ui/card"
-import AddModal from "./addmodal"
+import AddModal from "@/features/admin/product/addmodal"
 
 export default function Page() {
   const [product, setProduct] = useState<any[]>([]);

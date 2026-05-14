@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getSocket } from "@/lib/socket";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-import { DataTable } from "./data-table";
+import { DataTable } from "@/features/admin/pesanan/data-table";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { getPesanan } from "../actions";
+import { getPesanan } from "@/services/admin-api";
 
 export default function PesananPage() {
   const [data, setData] = useState<any[]>([]);

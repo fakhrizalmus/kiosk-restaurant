@@ -11,18 +11,19 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import React, { useState } from "react"
-import { login } from "../actions"
+import { register } from "@/services/auth-api"
 import { Eye, EyeOff } from "lucide-react"
 import "toastr/build/toastr.min.css";
 import toastr from "toastr";
 
-export function LoginForm({
+export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const [formData, setFormData] = useState({
+    name: "",
     nik: "",
-    password: ""
+    password: "",
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,11 +34,11 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const res = await login(formData)
+      const res = await register(formData)
       console.log("Login berhasil:", res)
     } catch (error) {
       console.error("Login gagal:", error)
-      toastr.error('Email atau password salah !')
+      toastr.error('Email sudah terpakai')
       return
     }
   }
@@ -51,12 +52,23 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">Register</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-6">
               <div className="grid gap-6">
+                <div className="grid gap-3">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    type="name"
+                    name="name"
+                    onChange={handleChange}
+                    value={formData.name}
+                    required
+                  />
+                </div>
                 <div className="grid gap-3">
                   <Label htmlFor="nik">NIK</Label>
                   <Input
@@ -92,13 +104,13 @@ export function LoginForm({
                   </div>
                 </div>
                 <Button type="submit" className="w-full">
-                  Login
+                  Register
                 </Button>
               </div>
               <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <a href="/register" className="underline underline-offset-4">
-                  Sign up
+                Already have an account?{" "}
+                <a href="/login" className="underline underline-offset-4">
+                  Sign in
                 </a>
               </div>
             </div>

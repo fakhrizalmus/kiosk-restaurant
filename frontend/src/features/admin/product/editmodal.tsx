@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-import { getProduct, updateProduct, getCategory } from "../actions";
+import { getProduct, updateProduct, getCategory } from "@/services/admin-api";
 
 import {
   Popover,

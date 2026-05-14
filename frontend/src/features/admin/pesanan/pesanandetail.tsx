@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
-import { getPesananDetail } from "../actions";
+import { getPesananDetail } from "@/services/admin-api";
 
 type Product = {
   id: number;

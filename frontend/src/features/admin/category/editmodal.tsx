@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-import { updateRole, getRole } from "../actions";
+import { updateCategory, getCategory } from "@/services/admin-api";
 
 interface EditModalProps {
   id: number | null;
@@ -26,48 +26,38 @@ interface EditModalProps {
 
 export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
   const [formData, setFormData] = useState({
-    role: "",
-    permission: ""
+    name: "",
   });
 
   useEffect(() => {
     if (id !== null) {
       (async () => {
         try {
-          const role = await getRole({ id: id });
-          setFormData({
-            role: role.data.rows[0].role,
-            permission: role.data.rows[0].permission
-          });
+          const category = await getCategory({ id: id });
+          setFormData({ name: category.data.rows[0].name });
         } catch (error) {
           console.error("Gagal ambil data kategori:", error);
           toastr.error("Gagal memuat data kategori");
         }
       })();
     } else {
-      setFormData({
-        role: "",
-        permission: ""
-      });
+      setFormData({ name: "" });
     }
   }, [id]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!formData.role.trim()) {
-      toastr.error("Nama role wajib diisi");
+    if (!formData.name.trim()) {
+      toastr.error("Nama kategori wajib diisi");
       return;
     }
 
     try {
-      await updateRole(formData, id!);
-      toastr.success("Berhasil update role");
+      await updateCategory(formData, id!);
+      toastr.success("Berhasil update kategori");
 
-      setFormData({
-        role: "",
-        permission: ""
-      });
+      setFormData({ name: "" });
       onSuccess();
       onClose()
     } catch (error) {
@@ -77,10 +67,7 @@ export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
   }
 
   const cancel = () => {
-    setFormData({
-      role: "",
-      permission: ""
-    });
+    setFormData({ name: "" });
     onClose();
   };
 
@@ -88,7 +75,7 @@ export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
     <div>
       <Dialog open={id !== null} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[825px]">
-          <RoleForm
+          <CategoryForm
             formData={formData}
             setFormData={setFormData}
             handleSubmit={handleSubmit}
@@ -100,58 +87,38 @@ export default function EditModal({ id, onClose, onSuccess }: EditModalProps) {
   );
 }
 
-function RoleForm({
+function CategoryForm({
   formData,
   setFormData,
   handleSubmit,
   cancel,
 }: {
-  formData: {
-    role: string,
-    permission: string
-  };
-  setFormData: React.Dispatch<React.SetStateAction<{
-    role: string,
-    permission: string
-  }>>;
+  formData: { name: string };
+  setFormData: React.Dispatch<React.SetStateAction<{ name: string }>>;
   handleSubmit: (e: React.FormEvent) => void;
   cancel: () => void;
 }) {
   return (
     <form onSubmit={handleSubmit}>
       <DialogHeader>
-        <DialogTitle>Edit Role</DialogTitle>
-        <DialogDescription>Ubah data role dan klik simpan untuk memperbarui.
+        <DialogTitle>Edit Kategori</DialogTitle>
+        <DialogDescription>Ubah data kategori dan klik simpan untuk memperbarui.
         </DialogDescription>
       </DialogHeader>
 
       <div className="grid gap-4 mt-4">
         <div className="grid gap-3">
           <Label htmlFor="name">
-            Nama Role <span className="text-red-500">*</span>
+            Nama Kategori <span className="text-red-500">*</span>
           </Label>
           <Input
-            id="role"
-            name="role"
-            value={formData.role}
+            id="name"
+            name="name"
+            value={formData.name}
             onChange={(e) =>
-              setFormData({ ...formData, role: e.target.value })
+              setFormData({ ...formData, name: e.target.value })
             }
-            placeholder="Role"
-          />
-        </div>
-        <div className="grid gap-3">
-          <Label htmlFor="description">
-            Permission <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="permission"
-            name="permission"
-            value={formData.permission}
-            onChange={(e) =>
-              setFormData({ ...formData, permission: e.target.value })
-            }
-            placeholder="Permission"
+            placeholder="Nama"
           />
         </div>
       </div>

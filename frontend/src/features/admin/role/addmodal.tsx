@@ -8,7 +8,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-import { addRole, getPermission } from "../actions";
+import { addRole, getPermission } from "@/services/admin-api";
 import { motion, AnimatePresence } from "framer-motion"
 import { Checkbox } from "@/components/ui/checkbox"
 

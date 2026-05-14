@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { DataTable } from "./data-table"
+import { DataTable } from "@/features/admin/category/data-table"
 import { CardTitle } from "@/components/ui/card"
-import AddModal from "./addmodal"
-import { deleteCategory, getCategory } from "../actions"
+import AddModal from "@/features/admin/category/addmodal"
+import { deleteCategory, getCategory } from "@/services/admin-api"
 
 export default function Page() {
   const [category, setCategory] = useState<any[]>([]);

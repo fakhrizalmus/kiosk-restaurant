@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { DataTable } from "./data-table"
+import { DataTable } from "@/features/admin/role/data-table"
 import { CardTitle } from "@/components/ui/card"
-import AddModal from "./addmodal"
-import { deleteRole, getRole } from "../actions"
+import AddModal from "@/features/admin/role/addmodal"
+import { deleteRole, getRole } from "@/services/admin-api"
 
 export default function Page() {
   const [role, setRole] = useState<any[]>([]);

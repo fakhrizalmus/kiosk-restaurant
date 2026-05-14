@@ -8,7 +8,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-import { addCategory } from "../actions";
+import { addCategory } from "@/services/admin-api";
 
 interface AddModalProps {
   onSuccess: () => void

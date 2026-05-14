@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { DataTable } from "./data-table"
+import { DataTable } from "@/features/admin/access/data-table"
 import { CardTitle } from "@/components/ui/card"
-import AddModal from "./addmodal"
-import { deletePermission, getPermission } from "../actions"
+import AddModal from "@/features/admin/access/addmodal"
+import { deletePermission, getPermission } from "@/services/admin-api"
 
 export default function Page() {
   const [permission, setPermission] = useState<any[]>([]);

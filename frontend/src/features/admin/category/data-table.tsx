@@ -36,7 +36,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getColumns, Category } from "./columns"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { getCategory } from "../actions"
+import { getCategory } from "@/services/admin-api"
 import EditModal from "./editmodal"
 
 type Props = {

@@ -34,20 +34,20 @@ import {
 import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getColumns, Pesanan } from "./columns"
-import { updateCartItem } from "../actions"
+import { getColumns, Product } from "./columns"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { getProduct } from "@/services/admin-api"
+import EditModal from "./editmodal"
 
 type Props = {
-  data: Pesanan[]
+  data: Product[]
   count: number
   pageSize: number | 10
   pageIndex: number | 0
   setPageSize: React.Dispatch<React.SetStateAction<number>>
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
-  selectedStatus: string
-  setSelectedStatus: (status: string) => void
-  noTable: number | null
-  setNoTable: (no: number | null) => void
+  refetch: () => void
+  onDelete: (id: number) => Promise<void>
 }
 
 export function DataTable({
@@ -57,22 +57,29 @@ export function DataTable({
   pageSize,
   setPageIndex,
   setPageSize,
-  selectedStatus,
-  setSelectedStatus,
-  noTable,
-  setNoTable,
+  refetch,
+  onDelete
 }: Props) {
+  const [selectedIdToDelete, setSelectedIdToDelete] = React.useState<number | null>(null)
+  const [selectedIdToEdit, setSelectedIdToEdit] = React.useState<number | null>(null)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-  const onStatusChange = React.useCallback(
-    (cartItemId: number, newStatus: "waiting" | "preparing" | "served") => {
-      return updateCartItem(cartItemId, { status: newStatus });
-    },
-    []
-  );
-  const columns = React.useMemo(() => getColumns(onStatusChange), [onStatusChange])
+  const columns = React.useMemo(() => getColumns(setSelectedIdToDelete, setSelectedIdToEdit), [])
+  const [selectedData, setSelectedData] = React.useState<Product>();
+
+  React.useEffect(() => {
+    const fetchProduk = async () => {
+      const res = await getProduct({
+        id: selectedIdToDelete ?? undefined
+      })
+
+      setSelectedData(res.data.rows[0])
+    }
+
+    fetchProduk();
+  }, [selectedIdToDelete]);
 
   const table = useReactTable({
     data,
@@ -90,6 +97,10 @@ export function DataTable({
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination: {
+        pageIndex: pageIndex ?? 0,
+        pageSize: pageSize ?? 10
+      }
     },
     onPaginationChange: (updater) => {
       const next = typeof updater === 'function' ? updater({ pageIndex, pageSize }) : updater
@@ -102,55 +113,52 @@ export function DataTable({
 
   return (
     <div className="w-full bg-white px-4 rounded-xl shadow-md border">
-      <div className="-mx-4 rounded-xl bg-orange-500 px-4 py-4 flex flex-wrap gap-4 items-center">
-        {/* Filter Status */}
+      {selectedIdToDelete !== null && (
+        <AlertDialog open={true} onOpenChange={() => setSelectedIdToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Apakah kamu yakin menghapus {selectedData?.name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tindakan ini akan menghapus data pengeluaran secara permanen.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Batal</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-600 text-white"
+                onClick={() => {
+                  onDelete(selectedIdToDelete)
+                  setSelectedIdToDelete(null)
+                }}
+              >
+                Hapus
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+      {selectedIdToEdit !== null && (
+        <EditModal
+          id={selectedIdToEdit}
+          onClose={() => setSelectedIdToEdit(null)}
+          onSuccess={() => {
+            setSelectedIdToEdit(null)
+            refetch()
+          }}
+        />
+      )}
+      <div className="-mx-4 rounded-xl bg-orange-500 px-4 py-4 flex items-center">
+        <Input
+          placeholder="Cari nama..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm bg-white text-black placeholder:text-black"
+        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="bg-white text-black">
-              Status: {selectedStatus ? selectedStatus : "Semua"} <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuCheckboxItem
-              checked={selectedStatus === ""}
-              onCheckedChange={() => setSelectedStatus("")}
-            >Semua</DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={selectedStatus === "ongoing"}
-              onCheckedChange={() => setSelectedStatus("ongoing")}
-            >Ongoing</DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={selectedStatus === "end"}
-              onCheckedChange={() => setSelectedStatus("end")}
-            >Selesai</DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {/* Filter Meja */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="bg-white text-black">
-              Meja: {noTable ? noTable : "Semua"} <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuCheckboxItem
-              checked={noTable === null}
-              onCheckedChange={() => setNoTable(null)}
-            >Semua</DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={noTable === 1}
-              onCheckedChange={() => setNoTable(1)}
-            >1</DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={noTable === 2}
-              onCheckedChange={() => setNoTable(2)}
-            >2</DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {/* Button Columns */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto bg-white text-black">
+            <Button variant="outline" className="ml-auto">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
