@@ -15,7 +15,10 @@ const server = http.createServer(app);
 const PORT = process.env.PORT || 4000;
 const isProduction = process.env.NODE_ENV === 'production';
 const sessionSecret = process.env.SESSION_SECRET || 'SECRET_SESSION_KEY';
-const sameSite = isProduction ? 'none' : false;
+const sessionCookieSecure = process.env.SESSION_COOKIE_SECURE
+  ? process.env.SESSION_COOKIE_SECURE === 'true'
+  : isProduction;
+const sessionCookieSameSite = process.env.SESSION_COOKIE_SAME_SITE || (isProduction ? 'none' : false);
 
 const io = new Server(server, {
   cors: getSocketCorsOptions(),
@@ -42,8 +45,8 @@ app.use(
     rolling: true,
     cookie: {
       httpOnly: true,
-      secure: isProduction,
-      sameSite,
+      secure: sessionCookieSecure,
+      sameSite: sessionCookieSameSite,
       maxAge: 24 * 60 * 60 * 1000,
     },
   })

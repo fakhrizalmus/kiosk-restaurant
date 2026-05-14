@@ -6,7 +6,16 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
+const baseConfig = require(__dirname + '/../config/config.json')[env];
+const config = {
+  ...baseConfig,
+  username: process.env.DB_USERNAME || baseConfig.username,
+  password: process.env.DB_PASSWORD ?? baseConfig.password,
+  database: process.env.DB_NAME || baseConfig.database,
+  host: process.env.DB_HOST || baseConfig.host,
+  port: process.env.DB_PORT || baseConfig.port,
+  dialect: process.env.DB_DIALECT || baseConfig.dialect,
+};
 const db = {};
 
 let sequelize;

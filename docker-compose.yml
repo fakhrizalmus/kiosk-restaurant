@@ -1,0 +1,66 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: kiosk-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: kiosk_restaurant
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: kiosk-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      CORS_ORIGIN: http://localhost:3000
+      SOCKET_CORS_ORIGIN: http://localhost:3000
+      SESSION_SECRET: change-this-session-secret
+      SESSION_COOKIE_SECURE: "false"
+      SESSION_COOKIE_SAME_SITE: lax
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: kiosk_restaurant
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      DB_DIALECT: mysql
+    ports:
+      - "4000:4000"
+    volumes:
+      - backend-uploads:/app/public/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:4000/api
+        NEXT_PUBLIC_API_UPLOAD: http://localhost:4000/uploads
+        NEXT_PUBLIC_API_SOCKET: http://localhost:4000
+    container_name: kiosk-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    ports:
+      - "3000:3000"
+
+volumes:
+  mysql-data:
+  backend-uploads:
